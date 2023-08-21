@@ -14,4 +14,4 @@ AllowedIPs =
 Endpoint =
 
 
-# Production installation
+# How to install
