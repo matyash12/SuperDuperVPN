@@ -1,0 +1,8 @@
+<h1>Edit Peer</h1>
+<a href="javascript:history.go(-1)">Back</a>
+<form method="post">
+    {% csrf_token %}
+    {{form.as_p}}
+    <button type="submit" name="action"value="delete">Delete</button>
+    <button type="submit"name="action"value="save">Save peer</button>
+</form>

@@ -1,0 +1,7 @@
+<h1>Edit Interface</h1>
+<a href="javascript:history.go(-1)">Back</a>
+<form method="post">
+    {% csrf_token %}
+    {{form.as_p}}
+    <button type="submit">Save Interface</button>
+</form>
