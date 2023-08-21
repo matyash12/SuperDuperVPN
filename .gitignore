@@ -1,5 +1,13 @@
 **/.DS_Store
 
+#place where config files are generated
+mysite/SuperDuperVPN/templates/generated_files/
+#place where qr code images are saved
+mysite/SuperDuperVPN/templates/generated_qr_codes/
+
+#for test purposes
+test.conf 
+
 #default suggested .gitignore by Github
 
 # Byte-compiled / optimized / DLL files
