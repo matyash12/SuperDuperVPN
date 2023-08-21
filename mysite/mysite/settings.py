@@ -88,10 +88,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'superdupervpn',
-        'USER': 'root',
+        'USER': 'django',
         'PASSWORD': 'password',
-        'HOST': '127.0.0.1',  # Set to your MySQL host, e.g., '127.0.0.1' or 'mysql.example.com'
-        'PORT': '32769',  # Default MySQL port is 3306
+        'HOST': 'db',  # Set to your MySQL host, e.g., '127.0.0.1' or 'mysql.example.com'
+        'PORT': '3306',  # Default MySQL port is 3306
     }
 }
 
@@ -146,10 +146,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Celery configuration settings
 
 # set the celery broker url
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = 'redis'
   
 # set the celery result backend
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis'
   
 # set the celery timezone
 CELERY_TIMEZONE = 'UTC'

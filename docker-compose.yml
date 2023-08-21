@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+  # MySQL database service
+  db:
+    image: mysql:8.1.0
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: superdupervpn
+      MYSQL_USER: django
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: "exit 0"
+  # Django app service
+  web:
+    build:
+      context: .
+      dockerfile: docker/django/dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+    environment:
+      - DJANGO_SETTINGS_MODULE=mysite.settings
+
+  #redis
+  redis:
+    image: redis:7.2.0-bookworm
+    ports:
+      - "6379:6379"
+    healthcheck:
+        test: "exit 0"
+  
+  celery:
+    build:
+      dockerfile: docker/celery/dockerfile
+    depends_on:
+      redis:
+        condition: service_healthy
