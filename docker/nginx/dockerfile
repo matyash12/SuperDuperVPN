@@ -1,0 +1,15 @@
+FROM nginx:1.25.2-bookworm
+# Remove the default Nginx configuration file
+RUN rm /etc/nginx/conf.d/default.conf
+
+# Copy your custom Nginx configuration file to the container
+COPY docker/nginx/conf.conf /etc/nginx/conf.d/
+
+# Copy your web content into the container
+COPY html /usr/share/nginx/html
+
+# Expose port 80 to the outside world
+EXPOSE 80
+
+# Start Nginx in the foreground
+CMD ["nginx", "-g", "daemon off;"]

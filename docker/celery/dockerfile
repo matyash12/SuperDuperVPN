@@ -2,16 +2,9 @@
 FROM python:3.11.4-bookworm
 # Set the working directory in the container
 WORKDIR /app
-
-# Install any necessary system packages
-# For example, if you need system packages, you can install them here
-
-# Copy the requirements file into the container and install the Python dependencies
-COPY docker/celery/requirements.txt requirements.txt
+COPY docker/celery/requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of your application code into the container
-COPY . .
-
 # Run the Celery worker when the container starts
-CMD ["celery", "-A", "mysite", "worker", "--loglevel=info"]
+
+CMD (cd mysite;celery -A mysite worker --loglevel=info)

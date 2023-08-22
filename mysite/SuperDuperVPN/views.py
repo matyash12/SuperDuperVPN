@@ -29,13 +29,26 @@ def edit_interface(request):
         instance = WireGuardInterface.objects.last()
         if instance == None:
             instance = WireGuardInterface()
-        form = WireGuardInterfaceForm(request.POST, instance=instance)
-        if form.is_valid():
-            # Process the form data
-            form.save()
-            Wireguard_from_database_to_config_file.delay()
-            # Do something with the data, e.g., save to a model or send an email
-            return redirect(index)
+        
+        if 'save' in request.POST['action']:
+            #save the interface settings
+            form = WireGuardInterfaceForm(request.POST, instance=instance)
+            if form.is_valid():
+                # Process the form data
+                form.save()
+                Wireguard_from_database_to_config_file.delay()
+                # Do something with the data, e.g., save to a model or send an email
+                return redirect(index)
+        elif 'generate' in request.POST['action']:
+            #generate private key
+            keymanager = Wireguard.KeyManager()
+            form = WireGuardInterfaceForm(instance=WireGuardInterface(), initial={
+                'Address':request.POST['Address'],
+                'SaveConfig':request.POST['SaveConfig'],
+                'ListenPort':request.POST['ListenPort'],
+                'PrivateKey':keymanager.decode_to_utf8(keymanager.generate_private_key_bytes())
+            })
+
     else:
         data = WireGuardInterface.objects.last()
 
@@ -92,23 +105,16 @@ def add_peer(request):
         else:
             if "generate" == request.POST["action"]:
                 #generates all peers fields
+                #int this part you MUST create wireguard_peer and context['private_key']
                 keymanager = Wireguard.KeyManager()
 
-
+    
                 #pre-filling form
                 private_key_bytes = keymanager.generate_private_key_bytes()
-
-                #trying to get endpoint
-                if WireGuardPeer.objects.last() != None:
-                    endpoint = WireGuardPeer.objects.last().Endpoint
-                else: 
-                    endpoint = 'not found'
-
-                #trying to get listening port
-                if WireGuardInterface.objects.last() != None:
-                    listening_port = WireGuardInterface.objects.last().ListenPort
-                else: 
-                    listening_port = '51820'
+                context["private_key"] = keymanager.decode_to_utf8(private_key_bytes)
+                #trying to get endpoin
+                endpoint = WireGuardPeer.objects.last().Endpoint
+                listening_port = WireGuardInterface.objects.last().ListenPort
                 
                 wireguard_peer = {
                     "PublicKey": keymanager.decode_to_utf8(
@@ -119,18 +125,15 @@ def add_peer(request):
                         "AllowedIPs": settings.DEFAULT_ALLOWED_IPS,
                         "Endpoint":endpoint+':'+listening_port
                 }
-
-                
-                context["private_key"] = keymanager.decode_to_utf8(private_key_bytes)
             elif "refresh" == request.POST['action']:
-                
+                #just transfer everyting to wireguard_peer
+                #TODO fix problem with private key. It doesnt exist by now
                 wireguard_peer = {
                     "PublicKey": request.POST['PublicKey'],
                         "AllowedIPs": request.POST['AllowedIPs'],
                         "Endpoint":request.POST['Endpoint']
                 }
-                #dont make anything new just show updated config file qr code, etc..
-                pass
+                
             
             form = WireGuardPeerForm(
                     instance=WireGuardPeer(),
@@ -147,9 +150,9 @@ def add_peer(request):
             wireguard_interface = WireGuardInterface.objects.last()
             if wireguard_interface != None:
                 config['Interface'] = {
-                    'PrivateKey':wireguard_interface.PrivateKey,
+                    'PrivateKey':context['private_key'], #private key for client
                     'ListenPort':wireguard_interface.ListenPort,
-                    'Address':wireguard_interface.Address,
+                    'Address':context['address'], #address of the client which he will use to connect to vpn server #TODO it needs to be generated
                     'DNS':settings.DEFAULT_DNS
                 }
             #peers part

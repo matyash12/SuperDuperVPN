@@ -1,7 +1,9 @@
 #!/bin/bash
+apt update
+apt install -y wireguard
 
-# Collect static files
-echo "Collect static files"
+
+echo "Running makemigrations"
 python mysite/manage.py makemigrations
 
 # Apply database migrations
@@ -9,5 +11,6 @@ echo "Apply database migrations"
 python mysite/manage.py migrate
 
 # Start server
-echo "Starting server"
-python mysite/manage.py runserver 0.0.0.0:8000
+echo "Starting gunicorn"
+(cd mysite; gunicorn mysite.wsgi --bind=0.0.0.0:8000)
+#python mysite/manage.py runserver 0.0.0.0:8000

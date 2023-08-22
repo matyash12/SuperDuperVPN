@@ -12,24 +12,25 @@ services:
     ports:
       - "3306:3306"
     healthcheck:
-      test: "exit 0"
+      test: mysqladmin ping --silent
   # Django app service
-  web:
+  django:
     build:
       context: .
       dockerfile: docker/django/dockerfile
     ports:
       - "8000:8000"
     volumes:
-      - .:/app
+      - my_shared_volume:/app
     depends_on:
       db:
         condition: service_healthy
       redis:
         condition: service_healthy
-
     environment:
       - DJANGO_SETTINGS_MODULE=mysite.settings
+    healthcheck:
+      test: curl 127.0.0.1:8000
 
   #redis
   redis:
@@ -37,11 +38,29 @@ services:
     ports:
       - "6379:6379"
     healthcheck:
-        test: "exit 0"
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
   
   celery:
     build:
+      context: .
       dockerfile: docker/celery/dockerfile
+    volumes:
+      - my_shared_volume:/app
+      - /tmp:/wireguardconfig #where config for wireguard is on host machine
     depends_on:
-      redis:
-        condition: service_healthy
+      - redis
+      - django
+  
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/nginx/dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - django
+
+
+
+volumes:
+  my_shared_volume:

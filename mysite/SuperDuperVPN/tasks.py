@@ -3,7 +3,6 @@ import time
 from .models import WireGuardInterface, WireGuardPeer
 from . import Wireguard
 from django.conf import settings
-import subprocess
 
 @shared_task
 def HelloWorld():

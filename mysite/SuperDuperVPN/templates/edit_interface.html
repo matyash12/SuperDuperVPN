@@ -1,7 +1,9 @@
 <h1>Edit Interface</h1>
 <a href="javascript:history.go(-1)">Back</a>
+
 <form method="post">
     {% csrf_token %}
     {{form.as_p}}
-    <button type="submit">Save Interface</button>
+    <button type="submit" name="action" value="generate">Generate private key</button>
+    <button type="submit" name="action" value="save">Save Interface</button>
 </form>

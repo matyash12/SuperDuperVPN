@@ -313,3 +313,4 @@ GitHub.sublime-settings
 !.vscode/extensions.json 
 .history
 mysite/SuperDuperVPN/migrations/0001_initial.py
+mysite/mysite/settings.py

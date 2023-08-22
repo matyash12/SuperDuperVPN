@@ -103,3 +103,7 @@ class KeyManager:
         pubkey_output = pubkey_process.communicate(input=private_key)[0]
 
         return pubkey_output
+
+class IpManager:
+    def __init__(self) -> None:
+        pass
