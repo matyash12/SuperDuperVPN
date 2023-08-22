@@ -9,8 +9,6 @@ services:
       MYSQL_DATABASE: superdupervpn
       MYSQL_USER: django
       MYSQL_PASSWORD: password
-    ports:
-      - "3306:3306"
     healthcheck:
       test: mysqladmin ping --silent
   # Django app service
@@ -18,8 +16,6 @@ services:
     build:
       context: .
       dockerfile: docker/django/dockerfile
-    ports:
-      - "8000:8000"
     volumes:
       - my_shared_volume:/app
     depends_on:
@@ -35,8 +31,6 @@ services:
   #redis
   redis:
     image: redis:7.2.0-bookworm
-    ports:
-      - "6379:6379"
     healthcheck:
       test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
   
@@ -56,7 +50,7 @@ services:
       context: .
       dockerfile: docker/nginx/dockerfile
     ports:
-      - "80:80"
+      - "127.0.0.1:80:80"
     depends_on:
       - django
 
