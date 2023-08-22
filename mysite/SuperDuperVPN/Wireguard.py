@@ -15,6 +15,7 @@ import subprocess
 # ]
 # }
 
+#TODO fix space after each key ending with '='
 #get, set wireguard config-file in dictionary
 class ConfigFile:
     
@@ -107,3 +108,14 @@ class KeyManager:
 class IpManager:
     def __init__(self) -> None:
         pass
+    
+    def GetAllPossibleIPS(self):
+        base_ip = "10.0.0."
+        ips = []
+
+        #ignoring first 5 due to the fact that something may be on them..
+        for x in range(5, 256):  # Start from 5 and go up to 255
+            ip = base_ip + str(x)
+            ips.append(ip)
+
+        return ips

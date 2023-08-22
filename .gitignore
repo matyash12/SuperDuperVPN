@@ -314,3 +314,5 @@ GitHub.sublime-settings
 .history
 mysite/SuperDuperVPN/migrations/0001_initial.py
 mysite/mysite/settings.py
+mysite/SuperDuperVPN/migrations/0002_settings.py
+mysite/wg0.conf

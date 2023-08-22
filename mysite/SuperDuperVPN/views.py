@@ -3,8 +3,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 # Create your views here.
 from django.http import HttpResponse
 from . import Wireguard
-from .forms import WireGuardInterfaceForm, WireGuardPeerForm
-from .models import WireGuardInterface, WireGuardPeer
+from .forms import WireGuardInterfaceForm, WireGuardPeerForm, SettingsForm
+from .models import WireGuardInterface, WireGuardPeer, Settings
 from .tasks import Wireguard_from_database_to_config_file, Restart_wireguard
 from django.conf import settings
 from django.http import FileResponse
@@ -219,5 +219,119 @@ def restart_wireguard(request):
     return render(request, "restart_wireguard.html", {})
 
 
+
+
 # wireguard_conf_file_path = '/Users/matyas/Documents/GitHub/super-duper-vpn/test.conf'
 # wireguard = Wireguard.ConfigFile(wireguard_conf_file_path)
+
+
+#Simple it should be
+#You open this page and it should automaticly save it to database
+#No hard things
+#no setup by user
+def add_peer_simple(request):
+    context = {}
+
+    data = {} #all things needed to make config file for client
+    #creating keys
+    keymanager = Wireguard.KeyManager()
+    private_key_bytes = keymanager.generate_private_key_bytes()
+    #private key client
+    data["PrivateKey"] = keymanager.decode_to_utf8(private_key_bytes)
+    #public key client
+    data["PublicKey"] = keymanager.decode_to_utf8(keymanager.generate_public_key_bytes(private_key_bytes))
+    
+    #find suitable client ip
+    all_possible_ips = Wireguard.IpManager().GetAllPossibleIPS()
+    for ip in all_possible_ips:
+        #check if in db already in use
+        if len(WireGuardPeer.objects.filter(AllowedIPs=ip+'/32')) == 0:
+            #it's free
+            data['Address'] = ip+'/32'
+            break
+
+
+    #creating DNS
+    data["DNS"] = '8.8.8.8'
+
+    #connections to these ips will go through this vpn
+    data["AllowedIPs"] = '0.0.0.0/0, ::/0' #everything
+
+    #ip address and port of this server 
+    data["Endpoint"] = Settings.objects.last().ServerIpAddress+':'+WireGuardInterface.objects.last().ListenPort
+    
+    #PersistentKeepalive
+    #dont know if this is neccesary? but many people use it
+    data["PersistentKeepalive"] = 30
+    
+    
+
+    #This what client needs to add to his local wireguard.
+    client_config_wireguard = {
+        'Interface':{
+            'PrivateKey':data["PrivateKey"],
+            'Address': data["Address"],
+            'DNS':data['DNS'],
+        },
+        'Peers':[{
+            'PublicKey':data['PublicKey'],
+            'AllowedIPs':data['AllowedIPs'],
+            'Endpoint':data['Endpoint'],
+            'PersistentKeepalive':data['PersistentKeepalive']
+        }]
+    }
+
+    #add to database this peer(client)
+    peer = WireGuardPeer()
+    peer.PublicKey = data['PublicKey']
+    peer.AllowedIPs = data['Address']
+    peer.Endpoint = ''
+    peer.save()
+    #save peer to server wireguard conf file
+    Wireguard_from_database_to_config_file.delay()
+
+
+
+
+    #creating config file
+    filename = str(uuid.uuid4()) + '.conf' #unique filename
+    filepath = settings.CLIENT_CONFIG_FILE_FOLDER+filename
+    wireguard_config_file =  Wireguard.ConfigFile(filepath)
+    #showing config file to copy paste
+    context['str_config_file'] = wireguard_config_file.create_config_string(client_config_wireguard)
+
+    #creating download file for client
+    wireguard_config_file.set_config(client_config_wireguard)
+    print('Wireguard config file generated:',filepath)
+    context['download_name_config_file'] = filename
+
+    #qr code generation
+    qr_code = qrcode.make(context['str_config_file'])
+    filename = str(uuid.uuid4())+'.png'
+    qr_code_save_path = settings.CLIENT_CONFIG_FILE_FOLDER_QR_CODE+filename
+    qr_code.save(qr_code_save_path) #saving qr code
+    context['qr_code_file'] = filename
+
+    return render(request, "add_peer/add_peer_simple.html", context)
+
+def server_settings(request):
+    context = {}
+    if request.method == 'POST':
+        settings = Settings.objects.last()
+        if settings == None:
+            settings = Settings()
+        form = SettingsForm(request.POST, instance=settings)
+        if form.is_valid():
+            # Process the form data
+            form.save()
+            # Do something with the data, e.g., save to a model or send an email
+            return redirect(index)
+    else:
+        data = Settings.objects.last()
+
+        if data == None:
+            data = Settings()
+
+        form = SettingsForm(instance=data)
+    context['form'] = form
+    return render(request, "settings.html", context)

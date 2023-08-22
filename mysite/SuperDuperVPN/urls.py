@@ -11,5 +11,7 @@ urlpatterns = [
     path("add_peer", views.add_peer, name="add_peer"),
     path("restart_wireguard", views.restart_wireguard, name="restart_wireguard"),
     path('download_wireguard_client_config/<str:name_of_the_file>', views.download_wireguard_client_config,name='download_wireguard_client_config'),
-    path('qr_code_viewer/<str:name_of_the_file>',views.qr_code_viewer,name='qr_code_viewer')
+    path('qr_code_viewer/<str:name_of_the_file>',views.qr_code_viewer,name='qr_code_viewer'),
+    path("add_peer_simple", views.add_peer_simple, name="add_peer_simple"),
+    path("settings", views.server_settings, name="settings"),
 ]
