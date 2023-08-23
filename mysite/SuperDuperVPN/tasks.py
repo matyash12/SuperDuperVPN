@@ -23,8 +23,7 @@ def Wireguard_from_database_to_config_file():
     for peer in WireGuardPeer.objects.all():
         peers.append({
             'PublicKey':peer.PublicKey,
-            'AllowedIPs':peer.AllowedIPs,
-            'Endpoint':peer.Endpoint
+            'AllowedIPs':peer.AllowedIPs
         })
 
     wireguard.set_config({
@@ -34,7 +33,9 @@ def Wireguard_from_database_to_config_file():
             'ListenPort':interface.ListenPort,
             'PrivateKey':interface.PrivateKey
         },
-        'Peers':peers
+        'Peers':peers,
+        #for settings extra rules after interface
+        'UFW':settings.WIREGUARD_CONFIG_FILE_AFTER_INTERFACE, 
     })
 @shared_task
 def Restart_wireguard():

@@ -40,11 +40,13 @@ def edit_interface(request):
         elif 'generate' in request.POST['action']:
             #generate private key
             keymanager = Wireguard.KeyManager()
+            private_key_bytes = keymanager.generate_private_key_bytes()
             form = WireGuardInterfaceForm(instance=WireGuardInterface(), initial={
                 'Address':request.POST['Address'],
                 'SaveConfig':request.POST['SaveConfig'],
                 'ListenPort':request.POST['ListenPort'],
-                'PrivateKey':keymanager.decode_to_utf8(keymanager.generate_private_key_bytes())
+                'PrivateKey':keymanager.decode_to_utf8(private_key_bytes),
+                'PublicKey':keymanager.decode_to_utf8(keymanager.generate_public_key_bytes(private_key_bytes))
             })
 
     else:
@@ -262,6 +264,8 @@ def add_peer_simple(request):
     #dont know if this is neccesary? but many people use it
     data["PersistentKeepalive"] = 30
     
+    #Publickey of server needed for Peer to estabilish connection
+    data["ServerPublickey"] =  WireGuardInterface.objects.last().PublicKey
     
 
     #This what client needs to add to his local wireguard.
@@ -272,7 +276,7 @@ def add_peer_simple(request):
             'DNS':data['DNS'],
         },
         'Peers':[{
-            'PublicKey':data['PublicKey'],
+            'PublicKey':data['ServerPublickey'],
             'AllowedIPs':data['AllowedIPs'],
             'Endpoint':data['Endpoint'],
             'PersistentKeepalive':data['PersistentKeepalive']

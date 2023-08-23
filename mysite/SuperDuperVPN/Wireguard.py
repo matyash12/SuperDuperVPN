@@ -58,6 +58,11 @@ class ConfigFile:
         interface_str = "[Interface]\n"
         for key, value in interface.items():
             interface_str += f"{key} = {value}\n"
+
+        #its when its adding to server config file
+        #it needs to add extra rules after [Interface]
+        if 'UFW' in config:
+            interface_str += '\n'+config['UFW']+'\n'
         
         peers_str = ""
         for peer in peers:

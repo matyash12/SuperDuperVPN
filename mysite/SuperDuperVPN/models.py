@@ -18,6 +18,8 @@ class WireGuardInterface(models.Model):
     SaveConfig = models.CharField(max_length=200, default='true')
     ListenPort = models.CharField(max_length=200,default='51820')
     PrivateKey = models.CharField(max_length=200)
+    #not needed for interface but needed for peers
+    PublicKey = models.CharField(max_length=200)
 
 class WireGuardPeer(models.Model):
     PublicKey = models.CharField(max_length=200)
