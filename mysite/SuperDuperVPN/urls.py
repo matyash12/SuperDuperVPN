@@ -4,7 +4,7 @@ from . import views
 
 urlpatterns = [
     path("", views.index, name="index"),
-    path("view", views.view, name="view"),
+    #path("view", views.view, name="view"), #no idea what this is
     path("edit_interface", views.edit_interface, name="edit_interface"),
     path("peers", views.peers, name="peers"),
     path("edit_peer/<int:peer_id>/", views.edit_peer, name="edit_peer"),
@@ -13,4 +13,8 @@ urlpatterns = [
     path('qr_code_viewer/<str:name_of_the_file>',views.qr_code_viewer,name='qr_code_viewer'),
     path("settings", views.server_settings, name="settings"),
     path("add_peer_name", views.add_peer_name, name="add_peer_name"),
+
+    #accounts
+    path('accounts/login',views.login_page,name='login'),
+    path('accounts/logout',views.logout_page,name='logout')
 ]

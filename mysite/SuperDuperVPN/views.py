@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 # Create your views here.
 from django.http import HttpResponse
 from . import Wireguard
-from .forms import WireGuardInterfaceForm, WireGuardPeerForm, SettingsForm, WireguardPeerNameForm
+from .forms import WireGuardInterfaceForm, WireGuardPeerForm, SettingsForm, WireguardPeerNameForm, LoginForm
 from .models import WireGuardInterface, WireGuardPeer, Settings
 from .tasks import Wireguard_from_database_to_config_file, Restart_wireguard
 from django.conf import settings
@@ -13,15 +13,20 @@ import uuid
 import qrcode
 import qrcode.image.svg
 from django.core.paginator import Paginator
+from django.contrib.auth import authenticate, login
+from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def index(request):
     return render(request, "index.html")
 
 
-def view(request):
-    return render(request, "view.html")
+#i have no idea what this is? wtf
+#def view(request):
+#    return render(request, "view.html")
 
-
+@login_required
 def edit_interface(request):
     if request.method == "POST":
         instance = WireGuardInterface.objects.last()
@@ -59,7 +64,7 @@ def edit_interface(request):
 
     return render(request, "edit_interface.html", {"form": form})
 
-
+@login_required
 def peers(request):
     objects = WireGuardPeer.objects.all()
     for obj in objects:
@@ -71,7 +76,7 @@ def peers(request):
 
     return render(request, 'peers.html', {'peers': objects_page})
 
-
+@login_required
 def edit_peer(request, peer_id):
     peer = get_object_or_404(WireGuardPeer, pk=peer_id)
     if request.method == "POST":
@@ -96,6 +101,7 @@ def edit_peer(request, peer_id):
 #make it safer...
 #so user can only download those he generated
 #TODO user should be able to see only those he generated
+@login_required
 def qr_code_viewer(request,name_of_the_file):
     image_path = settings.CLIENT_CONFIG_FILE_FOLDER_QR_CODE+ name_of_the_file
     with open(image_path, 'rb') as image_file:
@@ -104,6 +110,7 @@ def qr_code_viewer(request,name_of_the_file):
 #make it safer...
 #so user can only download those he generated
 #TODO user should be able to see only those he generated
+@login_required
 def download_wireguard_client_config(request,name_of_the_file):
     filename = settings.CLIENT_CONFIG_FILE_FOLDER + name_of_the_file
 
@@ -128,6 +135,7 @@ def download_wireguard_client_config(request,name_of_the_file):
 #You open this page and it should automaticly save it to database
 #No hard things
 #no setup by user
+@login_required
 def add_peer(request,pk):
     context = {}
     data = {} #all things needed to make config file for client
@@ -214,6 +222,7 @@ def add_peer(request,pk):
 
     return render(request, "add_peer/add_peer.html", context)
 
+@login_required
 def server_settings(request):
     context = {}
     if request.method == 'POST':
@@ -236,7 +245,7 @@ def server_settings(request):
     context['form'] = form
     return render(request, "settings.html", context)
 
-
+@login_required
 def add_peer_name(request):
     context = {}
     if request.method == 'POST':
@@ -250,3 +259,25 @@ def add_peer_name(request):
 
     context['form'] = form
     return render(request, "add_peer/add_peer_name.html",context)
+
+def login_page(request):
+    if request.user.is_authenticated:
+        return redirect('index')
+    context = {}
+    context['form'] = LoginForm()
+    context['invalid'] = False
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            user = authenticate(request,username=form.cleaned_data['username'],password=form.cleaned_data['password'])
+            if user is not None:
+                login(request,user)
+                return redirect('index')
+        context['invalid'] = True
+        context['form'] = form
+    return render(request,'accounts/login.html',context)
+
+def logout_page(request):
+    context = {}
+    logout(request)
+    return render(request,'accounts/logout.html',context)
