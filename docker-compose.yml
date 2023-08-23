@@ -5,10 +5,10 @@ services:
   db:
     image: mysql:8.1.0
     environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: superdupervpn
-      MYSQL_USER: django
-      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     healthcheck:
       test: mysqladmin ping --silent
   # Django app service
@@ -40,7 +40,7 @@ services:
       dockerfile: docker/celery/dockerfile
     volumes:
       - my_shared_volume:/app
-      - /tmp:/wireguardconfig #where config for wireguard is on host machine
+      - ${WIREGUARD_CONFIG_FOLDER}:/wireguardconfig #where config for wireguard is on host machine
     depends_on:
       - redis
       - django
@@ -50,7 +50,7 @@ services:
       context: .
       dockerfile: docker/nginx/dockerfile
     ports:
-      - "127.0.0.1:80:80"
+      - "80:80"
     depends_on:
       - django
 
