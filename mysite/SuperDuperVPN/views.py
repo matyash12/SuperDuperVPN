@@ -7,12 +7,10 @@ from .forms import WireGuardInterfaceForm, WireGuardPeerForm, SettingsForm
 from .models import WireGuardInterface, WireGuardPeer, Settings
 from .tasks import Wireguard_from_database_to_config_file, Restart_wireguard
 from django.conf import settings
-from django.http import FileResponse
 import os
 from wsgiref.util import FileWrapper
 import uuid
 import qrcode
-from io import BytesIO
 import qrcode.image.svg
 
 
