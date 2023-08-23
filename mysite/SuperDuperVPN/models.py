@@ -22,6 +22,8 @@ class WireGuardInterface(models.Model):
     PublicKey = models.CharField(max_length=200)
 
 class WireGuardPeer(models.Model):
+    #client gives this name it is for to friendly-know what is it
+    Name = models.CharField(max_length=200)
     PublicKey = models.CharField(max_length=200)
     AllowedIPs = models.CharField(max_length=200)
     Endpoint = models.CharField(max_length=200)

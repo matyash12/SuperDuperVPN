@@ -7,10 +7,18 @@ class WireGuardInterfaceForm(ModelForm):
         model = WireGuardInterface
         fields = ['Address','SaveConfig','ListenPort','PrivateKey','PublicKey']
 
+
 class WireGuardPeerForm(ModelForm):
+    Name = forms.CharField(required=True)
     class Meta:
         model = WireGuardPeer
-        fields = ['PublicKey','AllowedIPs']
+        fields = ['Name','PublicKey','AllowedIPs']
+
+class WireguardPeerNameForm(ModelForm):
+    Name = forms.CharField(required=True)
+    class Meta:
+        model = WireGuardPeer
+        fields = ['Name']
 
 class SettingsForm(ModelForm):
     class Meta:

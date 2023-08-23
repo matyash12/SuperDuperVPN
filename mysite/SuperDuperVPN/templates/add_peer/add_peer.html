@@ -1,12 +1,12 @@
-<h1>Add Peer Simple</h1>
-<a href="javascript:history.go(-1)">Back</a>
+<h1>New peer named '{{peer_name}}'</h1>
+<a href="{%url 'index'%}"><button>Done</button></a>
 
 
 <h2>Config file to copy and paste</h2>
 <pre>{{str_config_file}}</pre>
 
 <h2>You can download you config file here: </h2>
-<a href="{% url 'download_wireguard_client_config' download_name_config_file %}">Download</a>
+<a href="{% url 'download_wireguard_client_config' download_name_config_file %}"><button>Download</button></a>
 
 <h2>QR code</h2>
 <img src="{% url 'qr_code_viewer' qr_code_file %}" alt="Private Image">

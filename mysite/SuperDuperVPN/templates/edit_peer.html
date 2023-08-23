@@ -1,8 +1,10 @@
 <h1>Edit Peer</h1>
-<a href="javascript:history.go(-1)">Back</a>
 <form method="post">
     {% csrf_token %}
     {{form.as_p}}
+    <a href="{%url 'peers'%}"><button type='button'>Cancel</button></a>
     <button type="submit" name="action"value="delete">Delete</button>
-    <button type="submit"name="action"value="save">Save peer</button>
+    <button type="submit"name="action"value="save">Save</button>
 </form>
+<h2>Notes</h2>
+<p>If you've lost your configuration file (QR code), you'll need to create a new peer and then delete the old one (this one) to resolve this issue.</p>

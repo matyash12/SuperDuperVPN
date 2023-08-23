@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 # Create your views here.
 from django.http import HttpResponse
 from . import Wireguard
-from .forms import WireGuardInterfaceForm, WireGuardPeerForm, SettingsForm
+from .forms import WireGuardInterfaceForm, WireGuardPeerForm, SettingsForm, WireguardPeerNameForm
 from .models import WireGuardInterface, WireGuardPeer, Settings
 from .tasks import Wireguard_from_database_to_config_file, Restart_wireguard
 from django.conf import settings
@@ -12,7 +12,7 @@ from wsgiref.util import FileWrapper
 import uuid
 import qrcode
 import qrcode.image.svg
-
+from django.core.paginator import Paginator
 
 def index(request):
     return render(request, "index.html")
@@ -61,10 +61,15 @@ def edit_interface(request):
 
 
 def peers(request):
-    forms = []
-    for peer in WireGuardPeer.objects.all():
-        forms.append(peer)
-    return render(request, "peers.html", {"forms": forms})
+    objects = WireGuardPeer.objects.all()
+    for obj in objects:
+        obj.PublicKey = obj.PublicKey[:10]
+    paginator = Paginator(objects, 10)  # Show 10 objects per page
+    
+    page = request.GET.get('page')
+    objects_page = paginator.get_page(page)
+
+    return render(request, 'peers.html', {'peers': objects_page})
 
 
 def edit_peer(request, peer_id):
@@ -123,9 +128,8 @@ def download_wireguard_client_config(request,name_of_the_file):
 #You open this page and it should automaticly save it to database
 #No hard things
 #no setup by user
-def add_peer(request):
+def add_peer(request,pk):
     context = {}
-
     data = {} #all things needed to make config file for client
     #creating keys
     keymanager = Wireguard.KeyManager()
@@ -143,7 +147,7 @@ def add_peer(request):
             data['Address'] = ip+'/32'
             break
 
-
+    
     #creating DNS
     data["DNS"] = '8.8.8.8'
 
@@ -177,7 +181,8 @@ def add_peer(request):
     }
 
     #add to database this peer(client)
-    peer = WireGuardPeer()
+    peer = WireGuardPeer.objects.get(pk=pk)
+    context['peer_name'] = peer.Name
     peer.PublicKey = data['PublicKey']
     peer.AllowedIPs = data['Address']
     peer.Endpoint = ''
@@ -207,7 +212,7 @@ def add_peer(request):
     qr_code.save(qr_code_save_path) #saving qr code
     context['qr_code_file'] = filename
 
-    return render(request, "add_peer.html", context)
+    return render(request, "add_peer/add_peer.html", context)
 
 def server_settings(request):
     context = {}
@@ -230,3 +235,18 @@ def server_settings(request):
         form = SettingsForm(instance=data)
     context['form'] = form
     return render(request, "settings.html", context)
+
+
+def add_peer_name(request):
+    context = {}
+    if request.method == 'POST':
+        if 'add' in request.POST['action']:
+            form = WireguardPeerNameForm(request.POST)
+            if form.is_valid():
+                obj = form.save()
+                return redirect('add_peer', obj.pk)
+    else:
+        form = WireguardPeerNameForm()
+
+    context['form'] = form
+    return render(request, "add_peer/add_peer_name.html",context)

@@ -1,17 +1,35 @@
 <h1>Peers</h1>
-<a href="javascript:history.go(-1)">Back</a>
-<a href="{%url 'add_peer'%}">Add peer</a>
+<a href="{%url 'index'%}"><button>Cancel</button></a>
+<a href="{%url 'add_peer_name'%}"><button>Add peer</button></a>
 <table>
     <tr>
-        <th>PublicKey</th>
-        <th>AllowedIPs</th>
+        <th>Name</th>
+        <th>Public key</th>
         <th>Edit</th>
     </tr>
-    {% for form in forms %}
+    {% for peer in peers %}
     <tr>
-        <td>{{form.PublicKey}}</td>
-        <td>{{form.AllowedIPs}}</td>
-        <td><a href="{% url 'edit_peer' form.id %}">Edit</a></td>
+        <td>{{peer.Name}}</td>
+        <td>{{peer.PublicKey}}</td>
+        <td><a href="{% url 'edit_peer' peer.pk %}"><button>Edit</button></a></td>
     </tr>
     {% endfor %}
 </table>
+
+<div class="pagination">
+    <span class="step-links">
+        {% if peers.has_previous %}
+            <a href="?page=1"><button>first</button></a>
+            <a href="?page={{ peers.previous_page_number }}"><button>previous</button></a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ peers.number }} of {{ peers.paginator.num_pages }}.
+        </span>
+
+        {% if peers.has_next %}
+            <a href="?page={{ peers.next_page_number }}"><button>next</button></a>
+            <a href="?page={{ peers.paginator.num_pages }}"><button>last</button></a>
+        {% endif %}
+    </span>
+</div>

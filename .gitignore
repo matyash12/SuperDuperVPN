@@ -312,9 +312,8 @@ GitHub.sublime-settings
 !.vscode/launch.json 
 !.vscode/extensions.json 
 .history
-mysite/SuperDuperVPN/migrations/0001_initial.py
 mysite/mysite/settings.py
-mysite/SuperDuperVPN/migrations/0002_settings.py
 mysite/wg0.conf
 mysite/mysite/_settings.py
-mysite/SuperDuperVPN/migrations/0003_wireguardinterface_publickey.py
+.vscode/launch.json
+mysite/SuperDuperVPN/migrations/

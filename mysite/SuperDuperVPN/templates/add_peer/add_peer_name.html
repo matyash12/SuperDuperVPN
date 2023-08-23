@@ -1,0 +1,8 @@
+<h1>Add new peer</h1>
+<form method='post'>
+    {% csrf_token %}
+    {{form.as_p}}
+    {{form.errors}}
+    <a href="{% url 'peers' %}"><button type="button">Cancel</button></a>
+    <button type="submit" name="action" value="add">Create</button>
+</form>

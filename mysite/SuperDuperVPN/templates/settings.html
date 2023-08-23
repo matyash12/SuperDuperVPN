@@ -1,7 +1,7 @@
 <h1>Settings</h1>
-<a href="javascript:history.go(-1)">Back</a>
 <form method="post">
     {% csrf_token %}
     {{form.as_p}}
+    <a href="{%url 'index'%}"><button type='button'>Cancel</button></a>
     <button type="submit">Save</button>
 </form>
