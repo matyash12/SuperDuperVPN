@@ -175,6 +175,14 @@ CELERY_TIMEZONE = 'UTC'
 #+DO a backup before using this
 WIREGUARD_CONF_FILE_PATH = '/wireguardconfig/wg0.conf'
 WIREGUARD_COMMAND_TO_RESTART = 'systemctl restart wg-quick@wg0'
+WIREGUARD_CONFIG_FILE_AFTER_INTERFACE = """
+PostUp = ufw route allow in on wg0 out on eth0
+PostUp = iptables -t nat -I POSTROUTING -o eth0 -j MASQUERADE
+PostUp = ip6tables -t nat -I POSTROUTING -o eth0 -j MASQUERADE
+PreDown = ufw route delete allow in on wg0 out on eth0
+PreDown = iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
+PreDown = ip6tables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
+""" #this is for wireguard to work...
 
 #add_peer default values for generate method
 DEFAULT_ALLOWED_IPS = '0.0.0.0/0, ::/0'
