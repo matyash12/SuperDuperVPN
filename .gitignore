@@ -317,3 +317,4 @@ mysite/mysite/settings.py
 mysite/SuperDuperVPN/migrations/0002_settings.py
 mysite/wg0.conf
 mysite/mysite/_settings.py
+mysite/SuperDuperVPN/migrations/0003_wireguardinterface_publickey.py

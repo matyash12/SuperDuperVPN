@@ -10,9 +10,12 @@ class WireGuardInterfaceForm(ModelForm):
 class WireGuardPeerForm(ModelForm):
     class Meta:
         model = WireGuardPeer
-        fields = ['PublicKey','AllowedIPs','Endpoint']
+        fields = ['PublicKey','AllowedIPs']
 
 class SettingsForm(ModelForm):
     class Meta:
         model = Settings
         fields = ['ServerIpAddress']
+        labels = {
+            'ServerIpAddress':'IP address of this server'
+        }

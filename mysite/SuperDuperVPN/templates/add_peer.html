@@ -1,26 +1,6 @@
-<h1>Add Peer</h1>
+<h1>Add Peer Simple</h1>
 <a href="javascript:history.go(-1)">Back</a>
 
-<form method="post">
-    {% csrf_token %}
-    <button type="submit" name="action" value="generate">Generate</button>
-</form>
-
-<p>Add port to Endpoint like ip_address:51820</p>
-
-<form method="post">
-    {% csrf_token %}
-    {{form.as_p}}
-    <button type="submit" name="action" value="save">Save Peer</button>
-    <button type="submit" name="action" value="refresh">Refresh</button>
-</form>
-
-{% if show_download_options %}
-
-<p>You will see it only once. So write it down! Do not share with anyone!</p>
-
-<h2>Private key</h2>
-<p>{{private_key}}</p>
 
 <h2>Config file to copy and paste</h2>
 <pre>{{str_config_file}}</pre>
@@ -30,4 +10,3 @@
 
 <h2>QR code</h2>
 <img src="{% url 'qr_code_viewer' qr_code_file %}" alt="Private Image">
-{%endif%}

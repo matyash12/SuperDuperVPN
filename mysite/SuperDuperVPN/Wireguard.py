@@ -54,7 +54,6 @@ class ConfigFile:
     def create_config_string(self,config) -> str:
         interface = config['Interface']
         peers = config['Peers']
-
         interface_str = "[Interface]\n"
         for key, value in interface.items():
             interface_str += f"{key} = {value}\n"
@@ -100,7 +99,8 @@ class KeyManager:
         # Run the 'wg genkey' command and capture its output
         genkey_process = subprocess.Popen(['wg', 'genkey'], stdout=subprocess.PIPE)
         genkey_output = genkey_process.communicate()[0]
-
+        #removing last character because it is '\n'.
+        genkey_output = genkey_output[:-1] 
         return genkey_output
     
     def generate_public_key_bytes(self,private_key):
