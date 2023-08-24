@@ -53,6 +53,9 @@ services:
       - "80:80"
     depends_on:
       - django
+    volumes:
+      - ${NGINX_FULLCHAIN_LOCATION}:/etc/nginx/ssl/fullchain.pem
+      - ${NGINX_PRIVKEY_LOCATION}:/etc/nginx/ssl/privkey.pem
 
 
 
