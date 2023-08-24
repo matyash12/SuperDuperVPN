@@ -192,3 +192,7 @@ DEFAULT_DNS = '8.8.8.8' #google
 #place where when a wireguard config file is generated for it will be saved here. (temporelary)
 CLIENT_CONFIG_FILE_FOLDER = 'SuperDuperVPN/templates/generated_files/' #end with '/'
 CLIENT_CONFIG_FILE_FOLDER_QR_CODE = 'SuperDuperVPN/templates/generated_qr_codes/'#end with '/'
+
+
+#place where client will be redirected if he isnt logined...
+LOGIN_URL = 'accounts/login'
