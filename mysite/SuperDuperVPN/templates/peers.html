@@ -1,35 +1,66 @@
-<h1>Peers</h1>
-<a href="{%url 'index'%}"><button>Cancel</button></a>
-<a href="{%url 'add_peer_name'%}"><button>Add peer</button></a>
-<table>
-    <tr>
-        <th>Name</th>
-        <th>Public key</th>
-        <th>Edit</th>
-    </tr>
-    {% for peer in peers %}
-    <tr>
-        <td>{{peer.Name}}</td>
-        <td>{{peer.PublicKey}}</td>
-        <td><a href="{% url 'edit_peer' peer.pk %}"><button>Edit</button></a></td>
-    </tr>
-    {% endfor %}
-</table>
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title></title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'SuperDuperVPN/bulma.min.css' %}">
+  </head>
+  <body>
+    <!--[if lt IE 7]>
+      <p class="browsehappy">
+        You are using an <strong>outdated</strong> browser. Please
+        <a href="#">upgrade your browser</a> to improve your experience.
+      </p>
+    <![endif]-->
 
-<div class="pagination">
-    <span class="step-links">
-        {% if peers.has_previous %}
-            <a href="?page=1"><button>first</button></a>
-            <a href="?page={{ peers.previous_page_number }}"><button>previous</button></a>
-        {% endif %}
+    <div class="columns">
+      <div class="column is-offset-one-quarter is-half">
+        <p class="is-size-1">Peers</p>
+        <div class="field is-grouped">
+            <!--Home-->
+            <div class="control">
+                <a href="{% url 'index' %}"><button class="button">Home</button></a>
+            </div>
 
-        <span class="current">
-            Page {{ peers.number }} of {{ peers.paginator.num_pages }}.
-        </span>
+            <!--Add peer-->
+            <div class="control">
+                <a href="{% url 'add_peer_name' %}"><button class="button">Add peer</button></a>
+            </div>
+        </div>
 
-        {% if peers.has_next %}
-            <a href="?page={{ peers.next_page_number }}"><button>next</button></a>
-            <a href="?page={{ peers.paginator.num_pages }}"><button>last</button></a>
-        {% endif %}
-    </span>
-</div>
+        <table class="table is-bordered is-striped is-narrow is-hoverable">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Public key</th>
+              <th>Edit</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for peer in peers %}
+            <tr>
+              <td>{{ peer.Name }}</td>
+              <td>{{ peer.PublicKey }}</td>
+              <td>
+                <a href="{% url 'edit_peer' peer.pk %}" class="button is-link"
+                  >Edit</a
+                >
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <script src="" async defer></script>
+  </body>
+</html>

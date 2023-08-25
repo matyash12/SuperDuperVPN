@@ -1,8 +1,61 @@
-<h1>Add new peer</h1>
-<form method='post'>
-    {% csrf_token %}
-    {{form.as_p}}
-    {{form.errors}}
-    <a href="{% url 'peers' %}"><button type="button">Cancel</button></a>
-    <button type="submit" name="action" value="add">Create</button>
-</form>
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title></title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'SuperDuperVPN/bulma.min.css' %}">
+  </head>
+  <body>
+    <!--[if lt IE 7]>
+      <p class="browsehappy">
+        You are using an <strong>outdated</strong> browser. Please
+        <a href="#">upgrade your browser</a> to improve your experience.
+      </p>
+    <![endif]-->
+    <div class="columns">
+      <div class="column is-offset-one-quarter is-half">
+        <h1 class="is-size-1">Add New Peer</h1>
+
+        <form method="post">
+          {% csrf_token %}
+
+
+
+          <div class="field">
+            <label class="label">{{form.Name.label}}</label>
+            <div class="control">{{form.Name}}</div>
+          </div>
+
+
+
+
+
+          <!--buttons-->
+          <div class="field is-grouped">
+            <div class="control">
+              <button
+                type="submit"
+                name="action"
+                value="add"
+                class="button is-primary"
+              >
+                Create
+              </button>
+            </div>
+            <div class="control">
+              <a href="{% url 'peers' %}" class="button is-light">Cancel</a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

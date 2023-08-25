@@ -1,7 +1,50 @@
-<h1>Settings</h1>
-<form method="post">
-    {% csrf_token %}
-    {{form.as_p}}
-    <a href="{%url 'index'%}"><button type='button'>Cancel</button></a>
-    <button type="submit">Save</button>
-</form>
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title></title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'SuperDuperVPN/bulma.min.css' %}" />
+  </head>
+  <body>
+    <div class="columns">
+      <div class="column is-offset-one-quarter is-half">
+        <p class="is-size-1">Settings</p>
+        <!--[if lt IE 7]>
+          <p class="browsehappy">
+            You are using an <strong>outdated</strong> browser. Please
+            <a href="#">upgrade your browser</a> to improve your experience.
+          </p>
+        <![endif]-->
+
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="field">
+            <label class="label">{{form.ServerIpAddress.label}}</label>
+            <div class="control">{{form.ServerIpAddress}}</div>
+          </div>
+          <div class="field is-grouped">
+            <div class="control">
+              <button type="submit" class="button is-primary">Save</button>
+            </div>
+            <div class="control">
+              <a href="{%url 'index'%}"
+                ><button type="button" class="button is-light">
+                  Cancel
+                </button></a
+              >
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

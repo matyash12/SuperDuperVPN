@@ -1,10 +1,83 @@
-<h1>Edit Peer</h1>
-<form method="post">
-    {% csrf_token %}
-    {{form.as_p}}
-    <a href="{%url 'peers'%}"><button type='button'>Cancel</button></a>
-    <button type="submit" name="action"value="delete">Delete</button>
-    <button type="submit"name="action"value="save">Save</button>
-</form>
-<h2>Notes</h2>
-<p>If you've lost your configuration file (QR code), you'll need to create a new peer and then delete the old one (this one) to resolve this issue.</p>
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Edit peer</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'SuperDuperVPN/bulma.min.css' %}">
+  </head>
+  <body>
+    <!--[if lt IE 7]>
+      <p class="browsehappy">
+        You are using an <strong>outdated</strong> browser. Please
+        <a href="#">upgrade your browser</a> to improve your experience.
+      </p>
+    <![endif]-->
+
+    <div class="columns">
+      <div class="column is-offset-one-quarter is-half">
+        <p class="is-size-1">Edit "{{form.Name.value}}"</p>
+        <form method="post">
+            {% csrf_token %}
+          <!--Name-->
+          <div class="field">
+            <label class="label">{{form.Name.label}}</label>
+            <div class="control">{{form.Name}}</div>
+          </div>
+
+          <!--PublicKey-->
+          <div class="field">
+            <label class="label">{{form.PublicKey.label}}</label>
+            <div class="control">{{form.PublicKey}}</div>
+          </div>
+
+          <!--AllowedIPs-->
+          <div class="field">
+            <label class="label">{{form.AllowedIPs.label}}</label>
+            <div class="control">{{form.AllowedIPs}}</div>
+          </div>
+
+          <!--Notes-->
+      <p>If you've lost your configuration file (QR code), you'll need to create a new peer and then delete the old one (this one) to resolve this issue.</p>
+
+          <!--Buttons-->
+          <div class="field is-grouped">
+            <!--Save-->
+            <div class="control">
+              <button type="submit" name="action" value="save" class="button is-primary">
+                Save
+              </button>
+            </div>
+
+            
+
+            <!--Delete-->
+            <div class="control">
+              <button type="submit" name="action" value="delete" class="button is-danger">
+                Delete
+              </button>
+            </div>
+
+            <!--Cancel-->
+            <div class="control">
+                <a href="{% url 'peers' %}"
+                  ><button type="button" class="button is-light">Cancel</button></a
+                >
+              </div>
+          </div>
+        </form>
+        
+      </div>
+
+      
+
+    </div>
+  </body>
+</html>
