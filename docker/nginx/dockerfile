@@ -5,8 +5,8 @@ RUN rm /etc/nginx/conf.d/default.conf
 # Copy your custom Nginx configuration file to the container
 COPY docker/nginx/conf.conf /etc/nginx/conf.d/
 
-# Copy your web content into the container
-COPY html /usr/share/nginx/html
+#Get my static files.
+COPY mysite/SuperDuperVPN/static /static
 
 # Expose port 80 to the outside world
 EXPOSE 80
