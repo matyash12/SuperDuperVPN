@@ -3,6 +3,8 @@ import time
 from .models import WireGuardInterface, WireGuardPeer
 from . import Wireguard
 from django.conf import settings
+import os
+
 
 @shared_task
 def HelloWorld():
@@ -42,3 +44,16 @@ def Restart_wireguard():
     exec(settings.WIREGUARD_COMMAND_TO_RESTART) #TODO some more general way
 
     
+
+#for deleting config files in templatets/generated_files and qrcodes
+@shared_task
+def Delete_File(file_path, sleep=0):
+    if sleep != 0:
+        time.sleep(sleep)
+    if os.path.exists(file_path):    
+        os.remove(file_path)
+    
+
+
+
+
