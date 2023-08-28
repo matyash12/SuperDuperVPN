@@ -15,3 +15,4 @@ Endpoint =
 
 
 # How to install
+chmod +x run.sh apply_wireguard_conf.sh wireguard_logs.sh
