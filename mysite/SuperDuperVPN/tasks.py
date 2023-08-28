@@ -54,6 +54,31 @@ def Delete_File(file_path, sleep=0):
         os.remove(file_path)
     
 
+#deletes everything apart from .gitkeep from generated_files and generated_qr_codes
+@shared_task
+def CleanGenerated():
+    
+
+    #generated_files
+    folder_path = settings.CLIENT_CONFIG_FILE_FOLDER
+    generated_files = [os.path.join(folder_path, f) for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
+
+
+    for file_path in generated_files:
+       Delete_File.delay(file_path)
+
+
+    #generated_qr_codes
+    folder_path = settings.CLIENT_CONFIG_FILE_FOLDER_QR_CODE
+    generated_qr_codes = [os.path.join(folder_path, f) for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
+
+    for file_path in generated_qr_codes:
+       Delete_File.delay(file_path)
+
+
+    
+
+    
 
 
 

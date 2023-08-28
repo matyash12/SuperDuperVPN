@@ -11,7 +11,7 @@ from .forms import (
     LoginForm,
 )
 from .models import WireGuardInterface, WireGuardPeer, Settings
-from .tasks import Wireguard_from_database_to_config_file, Restart_wireguard, Delete_File
+from .tasks import Wireguard_from_database_to_config_file, Restart_wireguard, Delete_File,CleanGenerated
 from django.conf import settings
 import os
 from wsgiref.util import FileWrapper
@@ -321,3 +321,14 @@ def logout_page(request):
     return render(request, "accounts/logout.html", context)
 
 
+@login_required
+def extras(request):
+    context = {}
+    return render(request,"extras.html",context)
+
+#extras
+@login_required
+def extras_delete_generated_files(request):
+    context = {}
+    CleanGenerated()
+    return redirect('extras')

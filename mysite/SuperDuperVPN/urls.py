@@ -16,5 +16,10 @@ urlpatterns = [
 
     #accounts
     path('accounts/login',views.login_page,name='login'),
-    path('accounts/logout',views.logout_page,name='logout')
+    path('accounts/logout',views.logout_page,name='logout'),
+
+
+    #extras
+    path('extras',views.extras,name='extras'),
+    path('extras_delete_generated_files',views.extras_delete_generated_files,name='extras_delete_generated_files'),
 ]
