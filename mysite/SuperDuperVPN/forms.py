@@ -49,4 +49,3 @@ class SettingsForm(ModelForm):
 class LoginForm(forms.Form):
     username = forms.CharField(label='Username', max_length=200,widget=BulmaTextInput)
     password = forms.CharField(label='Password', widget=BulmaPasswordInput)
-

@@ -38,6 +38,23 @@
               </button></a
             >
           </div>
+          
+          <!--Load data from wireguard_log_file-->
+          <div class="control">
+            <a href="{% url 'extras_Load_Host_Wireguard_Logs' %}">
+              <button class="button" type="button">
+                Load host's logs
+              </button>
+            </a>
+          </div>
+          <!--Calculate PeerUsageData-->
+          <div class="control">
+            <a href="{% url 'extras_PeerUsageData' %}">
+              <button class="button" type="button">
+                Calculate Peer-Usage-Data
+              </button>
+            </a>
+          </div>
         </div>
       </div>
     </div>

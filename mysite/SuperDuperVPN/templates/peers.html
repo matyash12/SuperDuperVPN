@@ -22,7 +22,7 @@
     <![endif]-->
 
     <div class="columns">
-      <div class="column is-offset-one-quarter is-half">
+      <div class="column">
         <p class="is-size-1">Peers</p>
         <div class="field is-grouped">
             <!--Home-->
@@ -41,6 +41,9 @@
             <tr>
               <th>Name</th>
               <th>Public key</th>
+              <th>Endpoint</th>
+              <th>Received</th>
+              <th>Sent</th>
               <th>Edit</th>
             </tr>
           </thead>
@@ -49,6 +52,9 @@
             <tr>
               <td>{{ peer.Name }}</td>
               <td>{{ peer.PublicKey }}</td>
+              <td>{{peer.Endpoint}}</td>
+              <td>{{peer.Received}}</td>
+              <td>{{peer.Sent}}</td>
               <td>
                 <a href="{% url 'edit_peer' peer.pk %}" class="button is-link"
                   >Edit</a

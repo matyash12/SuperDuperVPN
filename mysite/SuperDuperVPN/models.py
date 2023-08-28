@@ -30,3 +30,21 @@ class WireGuardPeer(models.Model):
 
 class Settings(models.Model):
     ServerIpAddress = models.CharField(max_length=200)
+
+
+class WireguardCommandLogs(models.Model):
+    epoch_time = models.IntegerField() #time seconds from 1970
+    text = models.TextField() #log stored 
+
+#usage data for each peer made from WireguardCommandLogs
+#for every second
+class PeerUsageData(models.Model):
+    epoch_time = models.IntegerField() #time of reading (minute)
+    peer_public_key = models.CharField(max_length=200)
+
+    #data from log
+    Endpoint = models.CharField(max_length=200)
+    AllowedIPs = models.CharField(max_length=200)
+    Latest_Handshake = models.IntegerField() #in seconds
+    Transfer_Received_MiB = models.IntegerField() #in bytes or bits???
+    Transfer_Sent_MiB= models.IntegerField()

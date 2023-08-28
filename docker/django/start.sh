@@ -10,6 +10,10 @@ python mysite/manage.py makemigrations
 echo "Apply database migrations"
 python mysite/manage.py migrate
 
+
+#collect static for nginx
+python mysite/manage.py collectstatic
+
 # Start server
 echo "Starting gunicorn"
 (cd mysite; gunicorn mysite.wsgi --bind=0.0.0.0:8000)

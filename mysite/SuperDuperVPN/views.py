@@ -8,10 +8,10 @@ from .forms import (
     WireGuardPeerForm,
     SettingsForm,
     WireguardPeerNameForm,
-    LoginForm,
+    LoginForm
 )
-from .models import WireGuardInterface, WireGuardPeer, Settings
-from .tasks import Wireguard_from_database_to_config_file, Restart_wireguard, Delete_File,CleanGenerated
+from .models import WireGuardInterface, WireGuardPeer, Settings, PeerUsageData
+from .tasks import Wireguard_from_database_to_config_file, Restart_wireguard, Delete_File,CleanGenerated,Load_Host_Wireguard_Logs,Calculate_PeerUsageData
 from django.conf import settings
 import os
 from wsgiref.util import FileWrapper
@@ -81,10 +81,25 @@ def edit_interface(request):
 def peers(request):
     objects = WireGuardPeer.objects.all()
 
-    # for obj in objects:
-    #    obj.PublicKey = obj.PublicKey[:10]
+    objs = []
+    for obj in objects:
+        peer = {
+            'pk':obj.pk,
+            'Name':obj.Name,
+            'PublicKey':obj.PublicKey,
+        }
+        #usage data
+        usage_data = PeerUsageData.objects.filter(peer_public_key=obj.PublicKey).order_by('-epoch_time').first()
+        if usage_data is not None:
+            peer['Endpoint'] = usage_data.Endpoint
+            peer['Received'] = str(usage_data.Transfer_Received_MiB) + ' MiB' 
+            peer['Sent'] = str(usage_data.Transfer_Sent_MiB) + ' MiB'
+    
 
-    return render(request, "peers.html", {"peers": objects})
+
+        objs.append(peer)
+
+    return render(request, "peers.html", {"peers": objs})
 
 
 @login_required
@@ -331,4 +346,18 @@ def extras(request):
 def extras_delete_generated_files(request):
     context = {}
     CleanGenerated()
+    return redirect('extras')
+
+#extras
+@login_required
+def extras_Load_Host_Wireguard_Logs(request):
+    context = {}
+    Load_Host_Wireguard_Logs.delay()
+    return redirect('extras')
+
+#extras
+@login_required
+def extras_PeerUsageData(request):
+    context = {}
+    Calculate_PeerUsageData.delay()
     return redirect('extras')
