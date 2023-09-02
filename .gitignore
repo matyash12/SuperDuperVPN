@@ -317,5 +317,4 @@ mysite/wg0.conf
 mysite/mysite/_settings.py
 .vscode/launch.json
 mysite/SuperDuperVPN/migrations/
-docker-compose.yml
 docker/nginx/conf.conf
