@@ -89,7 +89,7 @@ def peers(request):
             'PublicKey':obj.PublicKey,
         }
         #usage data
-        usage_data = PeerUsageData.objects.filter(peer_public_key=obj.PublicKey).order_by('-epoch_time').first()
+        usage_data = PeerUsageData.objects.filter(peer_public_key=obj.PublicKey.replace("\n", "")).order_by('-epoch_time').first()
         if usage_data is not None:
             peer['Endpoint'] = usage_data.Endpoint
             peer['Received'] = str(usage_data.Transfer_Received_MiB) + ' MiB' 
