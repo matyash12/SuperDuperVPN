@@ -200,7 +200,8 @@ def add_peer(request, pk):
 
     # PersistentKeepalive
     # dont know if this is neccesary? but many people use it
-    data["PersistentKeepalive"] = 30
+    
+    data["PersistentKeepalive"] = WireGuardPeer.objects.get(pk=pk).KeepAlive
 
     # Publickey of server needed for Peer to estabilish connection
     data["ServerPublickey"] = WireGuardInterface.objects.last().PublicKey
@@ -217,11 +218,14 @@ def add_peer(request, pk):
                 "PublicKey": data["ServerPublickey"],
                 "AllowedIPs": data["AllowedIPs"],
                 "Endpoint": data["Endpoint"],
-                "PersistentKeepalive": data["PersistentKeepalive"],
             }
         ],
     }
+    if data["PersistentKeepalive"] != 0:
+        client_config_wireguard['Peers'][0]['PersistentKeepalive'] = data["PersistentKeepalive"]
 
+
+    #Name and KeepAlive should already come filled from add_peer_name
     # add to database this peer(client)
     peer = WireGuardPeer.objects.get(pk=pk)
     context["peer_name"] = peer.Name

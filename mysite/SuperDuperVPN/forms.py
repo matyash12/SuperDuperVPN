@@ -13,6 +13,11 @@ class BulmaPasswordInput(forms.PasswordInput):
         super().__init__(*args, **kwargs)
         self.attrs.update({'class': 'input'})
 
+class BulmaIntegerInput(forms.NumberInput):
+   def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.attrs.update({'class': 'input'})
+
 
 
 class WireGuardInterfaceForm(ModelForm):
@@ -34,11 +39,14 @@ class WireGuardPeerForm(ModelForm):
         model = WireGuardPeer
         fields = ['Name','PublicKey','AllowedIPs']
 
+
+#used in add_peer_name
 class WireguardPeerNameForm(ModelForm):
-    Name = forms.CharField(widget=BulmaTextInput,required=True)
+    Name = forms.CharField(widget=BulmaTextInput,required=True, label='Name')
+    KeepAlive = forms.IntegerField(widget=BulmaIntegerInput,required=True,label='Keep alive',help_text='0 = means disable')
     class Meta:
         model = WireGuardPeer
-        fields = ['Name']
+        fields = ['Name','KeepAlive']
 
 class SettingsForm(ModelForm):
     ServerIpAddress = forms.CharField(widget=BulmaTextInput,required=True,label='IP address or domain of this server')
