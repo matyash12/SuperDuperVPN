@@ -15,13 +15,13 @@ CELERY_BEAT_SCHEDULE = {  # scheduler configuration
     "Load_Host_Wireguard_Logs_every_minute":{
         "task":"SuperDuperVPN.tasks.Load_Host_Wireguard_Logs",
         "schedule":60,
-        "args":{},
+        "args":{"seconds_in_the_past":3600},
     },
 
     #Load_Host_Wireguard_Logs (database) to actual usable data
     "Calculate_PeerUsageData":{
         "task":"SuperDuperVPN.tasks.Calculate_PeerUsageData",
         "schedule":60,
-        "args":{"seconds_in_the_past":3600},
+        "args":{},
     },
 }
