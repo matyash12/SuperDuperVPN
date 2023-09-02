@@ -58,6 +58,17 @@ services:
       - ${NGINX_FULLCHAIN_LOCATION}:/etc/nginx/ssl/fullchain.pem
       - ${NGINX_PRIVKEY_LOCATION}:/etc/nginx/ssl/privkey.pem
 
+  celery-beat:
+    build:
+      context: .
+      dockerfile: docker/celery_beat/dockerfile
+    volumes:
+      - my_shared_volume:/app
+    depends_on:
+      - redis
+      - django
+      - celery
+
 
 
 volumes:
