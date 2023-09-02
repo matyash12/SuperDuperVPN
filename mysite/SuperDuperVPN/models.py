@@ -27,6 +27,7 @@ class WireGuardPeer(models.Model):
     PublicKey = models.CharField(max_length=200)
     AllowedIPs = models.CharField(max_length=200)
     Endpoint = models.CharField(max_length=200)
+    KeepAlive = models.IntegerField(default=25)
 
 class Settings(models.Model):
     ServerIpAddress = models.CharField(max_length=200)
