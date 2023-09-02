@@ -196,3 +196,7 @@ CLIENT_CONFIG_FILE_FOLDER_QR_CODE = 'SuperDuperVPN/templates/generated_qr_codes/
 
 #place where client will be redirected if he isnt logined...
 LOGIN_URL = 'accounts/login'
+
+
+#importing from external file
+from mysite.celery_beat_schedule import *

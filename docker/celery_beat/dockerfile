@@ -1,0 +1,10 @@
+# Use an official Python runtime as a parent image
+FROM python:3.11.4-bookworm
+# Set the working directory in the container
+WORKDIR /app
+COPY docker/celery/requirements.txt /app/
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Run the Celery worker when the container starts
+
+CMD (cd mysite;celery -A mysite beat -l info)
