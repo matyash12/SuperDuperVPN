@@ -132,7 +132,7 @@ def qr_code_viewer(request, name_of_the_file):
     image_path = settings.CLIENT_CONFIG_FILE_FOLDER_QR_CODE + name_of_the_file
     with open(image_path, "rb") as image_file:
         response = HttpResponse(image_file.read(), content_type="image/png")
-        Delete_File.delay(image_path,60)
+        Delete_File.s(image_path).apply_async(countdown=60)
         return response
 
 
@@ -151,7 +151,7 @@ def download_wireguard_client_config(request, name_of_the_file, client_show_name
         response["Content-Disposition"] = (
             "attachment; filename=%s" % client_show_name+".conf"
         )
-        Delete_File.delay(filepath,60)
+        Delete_File.s(filepath).apply_async(countdown=60)
         return response
 
 
@@ -235,7 +235,7 @@ def add_peer(request, pk):
     # creating config file
     filename = str(uuid.uuid4()) + ".conf"  # unique filename
     filepath = settings.CLIENT_CONFIG_FILE_FOLDER + filename
-    Delete_File.delay(filepath,300) #5 minutes before its deleted
+    Delete_File.s(filepath).apply_async(countdown=300)
     wireguard_config_file = Wireguard.ConfigFile(filepath)
     # showing config file to copy paste
     context["str_config_file"] = wireguard_config_file.create_config_string(
@@ -259,7 +259,7 @@ def add_peer(request, pk):
     filename = str(uuid.uuid4()) + ".png"
     qr_code_save_path = settings.CLIENT_CONFIG_FILE_FOLDER_QR_CODE + filename
     qr_code.save(qr_code_save_path)  # saving qr code
-    Delete_File.delay(qr_code_save_path,300) #deleting in 5 minutes
+    Delete_File.s(qr_code_save_path).apply_async(countdown=300)
     context["qr_code_file"] = filename
 
     #this is what the file will be named when user download

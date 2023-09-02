@@ -49,9 +49,7 @@ def Restart_wireguard():
 
 #for deleting config files in templatets/generated_files and qrcodes
 @shared_task
-def Delete_File(file_path, sleep=0):
-    if sleep != 0:
-        time.sleep(sleep)
+def Delete_File(file_path):
     if os.path.exists(file_path):    
         os.remove(file_path)
     
