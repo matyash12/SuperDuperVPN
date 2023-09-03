@@ -51,7 +51,8 @@ def edit_interface(request):
                 # Do something with the data, e.g., save to a model or send an email
                 return redirect(index)
         elif "generate" in request.POST["action"]:
-            # generate private key
+            # generate keys
+            #TODO secure it so it wont be accidentaly clicked on
             keymanager = Wireguard.KeyManager()
             private_key_bytes = keymanager.generate_private_key_bytes()
             form = WireGuardInterfaceForm(
@@ -63,6 +64,7 @@ def edit_interface(request):
                     "PublicKey": keymanager.decode_to_utf8(
                         keymanager.generate_public_key_bytes(private_key_bytes)
                     ),
+                    "PreSharedKey":keymanager.decode_to_utf8(keymanager.generate_preshared_key_bytes())
                 },
             )
 
@@ -176,6 +178,7 @@ def add_peer(request, pk):
     data["PublicKey"] = keymanager.decode_to_utf8(
         keymanager.generate_public_key_bytes(private_key_bytes)
     )
+    data["PreSharedKey"] = WireGuardInterface.objects.last().PreSharedKey
     # find suitable client ip
     all_possible_ips = Wireguard.IpManager().GetAllPossibleIPS()
     for ip in all_possible_ips:
@@ -218,6 +221,7 @@ def add_peer(request, pk):
                 "PublicKey": data["ServerPublickey"],
                 "AllowedIPs": data["AllowedIPs"],
                 "Endpoint": data["Endpoint"],
+                "PreSharedKey": data["PreSharedKey"],
             }
         ],
     }

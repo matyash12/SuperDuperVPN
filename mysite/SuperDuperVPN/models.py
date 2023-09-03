@@ -21,6 +21,8 @@ class WireGuardInterface(models.Model):
     #not needed for interface but needed for peers
     PublicKey = models.CharField(max_length=200)
 
+    PreSharedKey = models.CharField(max_length=200,default='NONE')
+
 class WireGuardPeer(models.Model):
     #client gives this name it is for to friendly-know what is it
     Name = models.CharField(max_length=200, default='NoName')

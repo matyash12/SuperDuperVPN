@@ -25,10 +25,10 @@ class WireGuardInterfaceForm(ModelForm):
     ListenPort = forms.CharField(widget=BulmaTextInput,label='Listen port')
     PrivateKey = forms.CharField(widget=BulmaTextInput,required=False,label='Private key')
     PublicKey = forms.CharField(widget=BulmaTextInput,required=False,label='Public key')
-     
+    PreSharedKey = forms.CharField(widget=BulmaTextInput,required=False,label='PreShared Key')
     class Meta:
         model = WireGuardInterface
-        fields = ['Address','ListenPort','PrivateKey','PublicKey']
+        fields = ['Address','ListenPort','PrivateKey','PublicKey','PreSharedKey']
 
 
 class WireGuardPeerForm(ModelForm):

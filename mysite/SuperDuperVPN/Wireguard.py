@@ -110,6 +110,14 @@ class KeyManager:
 
         return pubkey_output
 
+
+    #Call to generate PreSharedKey . Use decode_to_utf8 to convert to string
+    def generate_preshared_key_bytes(self) -> bytes:
+        genkey_output = subprocess.Popen(['wg', 'genpsk'], stdin=subprocess.PIPE, stdout=subprocess.PIPE).communicate()[0]
+
+        genkey_output = genkey_output[:-1]
+        return genkey_output
+
 class IpManager:
     def __init__(self) -> None:
         pass
