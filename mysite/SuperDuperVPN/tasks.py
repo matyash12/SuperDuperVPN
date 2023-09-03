@@ -14,6 +14,8 @@ import time
 def HelloWorld():
     print('HELLO WORLD!')
 
+
+#called everytime when something has to be changed for server wireguard configuration (wg0.conf)
 @shared_task
 def Wireguard_from_database_to_config_file():
     wireguard = Wireguard.ConfigFile(settings.WIREGUARD_CONF_FILE_PATH)
@@ -36,7 +38,8 @@ def Wireguard_from_database_to_config_file():
             'Address':interface.Address,
             'SaveConfig':interface.SaveConfig,
             'ListenPort':interface.ListenPort,
-            'PrivateKey':interface.PrivateKey
+            'PrivateKey':interface.PrivateKey,
+            'PreSharedKey':interface.PreSharedKey,
         },
         'Peers':peers,
         #for settings extra rules after interface
