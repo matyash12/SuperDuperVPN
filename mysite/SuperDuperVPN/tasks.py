@@ -33,7 +33,8 @@ def Wireguard_from_database_to_config_file():
     for peer in WireGuardPeer.objects.all():
         peers.append({
             'PublicKey':peer.PublicKey,
-            'AllowedIPs':peer.AllowedIPs
+            'AllowedIPs':peer.Address,
+            'PreSharedKey':peer.PreSharedKey,
         })
 
     wireguard.set_config({
@@ -42,7 +43,6 @@ def Wireguard_from_database_to_config_file():
             'SaveConfig':interface.SaveConfig,
             'ListenPort':interface.ListenPort,
             'PrivateKey':interface.PrivateKey,
-            'PreSharedKey':interface.PreSharedKey,
         },
         'Peers':peers,
         #for settings extra rules after interface
