@@ -9,6 +9,9 @@ from django.db.models import Max
 import re
 import math
 import time
+import qrcode
+import qrcode.image.svg
+import uuid
 
 @shared_task
 def HelloWorld():
@@ -212,4 +215,58 @@ def Calculate_PeerUsageData():
 
     
 
+#generates string of peer for config
+@shared_task
+def GenerateConfigFile(peer:WireGuardPeer) -> str:
+    # This what client needs to add to his local wireguard.
+    client_config_wireguard = {
+        "Interface": {
+            "PrivateKey": peer.PrivateKey,
+            "Address": peer.Address,
+            "DNS": peer.DNS,
+        },
+        "Peers": [
+            {
+                "PublicKey": peer.ServerPublickey,
+                "AllowedIPs": peer.AllowedIPs,
+                "Endpoint": peer.Endpoint,
+                "PreSharedKey": peer.PreSharedKey,
+            }
+        ],
+    }
+    if peer.KeepAlive != 0:
+        client_config_wireguard['Peers'][0]['PersistentKeepalive'] = peer.KeepAlive
+    
+    text = Wireguard.ConfigFile('').create_config_string(
+        client_config_wireguard
+    )
+    return text
 
+
+#enter config string and this will generate config qrcode and returns a qrcode filename
+@shared_task
+def CreateQRConfigFile(config) -> str:
+    qr = qrcode.QRCode(
+        version=3,  # Specify the version here
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        border=0,
+    )
+    qr.add_data(config)
+    qr.make(fit=True)
+    qr_code = qr.make_image(fill_color="black", back_color="white")
+    filename = str(uuid.uuid4()) + ".png"
+    qr_code_save_path = settings.CLIENT_CONFIG_FILE_FOLDER_QR_CODE + filename
+    qr_code.save(qr_code_save_path)  # saving qr code
+    return filename
+
+
+
+#enter config string and this will generate file and return its filename
+@shared_task
+def CreateConfigFile(config) -> str:
+    # creating config file
+    filename = str(uuid.uuid4()) + ".conf"  # unique filename
+    filepath = settings.CLIENT_CONFIG_FILE_FOLDER + filename
+    #Delete_File.s(filepath).apply_async(countdown=300)
+    Wireguard.ConfigFile('').save_file(filepath,config)
+    return filename

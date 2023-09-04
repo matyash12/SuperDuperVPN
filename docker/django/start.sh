@@ -12,7 +12,7 @@ python mysite/manage.py migrate
 
 
 #collect static for nginx
-python mysite/manage.py collectstatic
+python mysite/manage.py collectstatic --noinput
 
 # Start server
 echo "Starting gunicorn"

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %} Peer | SDVPN {% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="columns">
+
+
+
+    <div class="column is-three-quarters">
+      <h1 class="title is-1">{{peer_name}}</h1>
+      <h2 class="subtitle">
+        You can download, copy or for mobile Wireguard you can scan QR code.
+      </h2>
+      <div class="field is-grouped">
+        <div class="control">
+          <a href="{% url 'peers' %}"><button class="button is-primary" type="button">Done</button></a>
+        </div>
+        <div class="control">
+          <a href="{% url 'download_wireguard_client_config' download_name_config_file client_show_name %}">
+            <button class="button" type="button">Download</button>
+          </a>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="column is-hidden-mobile">
+      <figure class="image is-128x128 is-pulled-right">
+        <img src="{% url 'qr_code_viewer' qr_code_file %}" alt="Private Image" />
+      </figure>
+    </div>
+
+  </div>
+
+</section>
+<figure class="image is-128x128 is-hidden-tablet">
+  <img src="{% url 'qr_code_viewer' qr_code_file %}" alt="Private Image" />
+</figure>
+
+
+<pre>{{str_config_file}}</pre>
+
+
+
+{% endblock %}

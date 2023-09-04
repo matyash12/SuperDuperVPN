@@ -27,9 +27,21 @@ class WireGuardPeer(models.Model):
     #client gives this name it is for to friendly-know what is it
     Name = models.CharField(max_length=200, default='NoName')
     PublicKey = models.CharField(max_length=200)
+    PrivateKey = models.CharField(max_length=200)
+    Address = models.CharField(max_length=200) #address of the server
+    DNS = models.CharField(max_length=200)
     AllowedIPs = models.CharField(max_length=200)
     Endpoint = models.CharField(max_length=200)
-    KeepAlive = models.IntegerField(default=25)
+    KeepAlive = models.IntegerField(default=25) #PersistentKeepalive
+    PreSharedKey = models.CharField(max_length=200)
+
+    #name of the file 1fcd2012-7714-40a2-a2e5-be6b780155a6.png
+    QRCodeName = models.CharField(max_length=200)
+        
+    #name of the file 84c9f3e6-c464-4762-aa95-74f4833eb175.conf
+    ConfigFileName = models.CharField(max_length=200)
+    
+    ServerPublickey = models.CharField(max_length=200)
 
 class Settings(models.Model):
     ServerIpAddress = models.CharField(max_length=200)

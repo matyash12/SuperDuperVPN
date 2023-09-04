@@ -1,34 +1,104 @@
-{% extends "base.html" %} 
+{% extends "base.html" %}
 
-{% block title %} Add peer - SuperDuperVPN {% endblock %} 
+
+{% block title %} Add peer | SDVPN {% endblock%}
+
 
 {% block content %}
-<section class="section">
-  <h1 class="title is-1">New peer named "{{peer_name}}"</h1>
-  <h2 class="subtitle">
-    You won't be able to view the configuration file afterward, so please ensure you make a copy of it.
-  </h2>
-  <div class="field is-grouped">
-    <div class="control">
-      <a href="{% url 'peers' %}"
-        ><button class="button is-primary" type="button">Done</button></a
-      >
+<form method="post">
+  {% csrf_token %}
+
+  <section class="section">
+    <h1 class="title is-1" id="h1name" >Add New Peer</h1>
+    <!--buttons-->
+    <div class="field is-grouped">
+      <div class="control">
+        <button
+          type="submit"
+          name="action"
+          value="add"
+          class="button is-primary"
+        >
+          Create
+        </button>
+      </div>
+      <div class="control">
+        <a href="{% url 'peers' %}" class="button is-light">Cancel</a>
+      </div>
     </div>
-    <div class="control">
-      <a href="{% url 'download_wireguard_client_config' download_name_config_file client_show_name %}">
-        <button class="button" type="button">Download</button>
-      </a>
-    </div>
+  </section>
+
+  {% if form.errors.Name != None %}
+  <div class="notification is-danger" id="nameexistsnotfication">
+    {{form.errors}}
   </div>
-</section>
+  {% endif %}
+  
+  <div class="field">
+    <label class="label">{{form.Name.label}}</label>
+    <div class="control">{{form.Name}}</div>
+  </div>
+  
+  
+  <h1 class="title">Advance settings</h1>
+  <h2 class="subtitle">Change only if you know what you are doing.</h2>
+  
+ 
+  <div class="field">
+    <label class="label">{{form.KeepAlive.label}}</label>
+    <div class="control">{{form.KeepAlive}}</div>
+    <label class="checkbox">
+      <input type="checkbox" id="usekeepalive" onchange="usekeepalivechange()">
+      Use keep alive?
+    </label>
+  </div>
+  
 
+  <div class="field">
+    <label class="label">{{form.DNS.label}}</label>
+    <div class="control">{{form.DNS}}</div>
+  </div>
+  <div class="field">
+    <label class="label">{{form.AllowedIPs.label}}</label>
+    <div class="control">{{form.AllowedIPs}}</div>
+  </div>
+  
 
-  <figure class="image is-square">
-    <img src="{% url 'qr_code_viewer' qr_code_file %}" alt="Private Image" />
-  </figure>
+</form>
+<!--To show cool changing title-->
+<script>
+  function NameChange(){    
+    value = document.getElementById('PeerName').value
+    if (value == ''){
+      document.getElementById('h1name').textContent = 'Add New Peer'
+    }else{
+      document.getElementById('h1name').textContent = 'Add ' + value
+    }
+  }
+  NameChange()
+</script>
 
-  <pre>{{str_config_file}}</pre>
+<!--Use: keep alive?-->
+<script>
+  
+function usekeepalivechange(){
+  if (document.getElementById('usekeepalive').checked){
+    //enable
+    document.getElementById('keepaliveinput').disabled = false
+  }else{
+    //disable
+    document.getElementById('keepaliveinput').disabled = true
+    document.getElementById('keepaliveinput').value = 0
+  }
+}
+usekeepalivechange()
+</script>
 
-
-
+<!--Disable notification about name already exists-->
+<script>
+function NameChangeNotification(){
+    document.getElementById('nameexistsnotfication').hidden = true
+    
+  }
+</script>
 {% endblock %}

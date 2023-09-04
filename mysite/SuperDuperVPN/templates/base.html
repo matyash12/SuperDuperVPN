@@ -4,68 +4,68 @@
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Home</title>
-    <meta name="description" content="" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'SuperDuperVPN/bulma.min.css' %}" />
-  </head>
-  <body>
-    <nav class="navbar" role="navigation" aria-label="main navigation">
-      <div class="navbar-brand">
-        <a class="navbar-item" href="{% url 'index' %}">
-          <img
-            src="https://bulma.io/images/bulma-logo.png"
-            width="112"
-            height="28"
-          />
-        </a>
 
-        <a
-          role="button"
-          class="navbar-burger"
-          aria-label="menu"
-          aria-expanded="false"
-          data-target="navbarBasicExample"
-        >
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-          <span aria-hidden="true"></span>
-        </a>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="description" content="" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  {% load static %}
+  <title>{% block title %} Home {% endblock title %}</title>
+  <link rel="icon" type="image/x-icon" href="{% static 'SuperDuperVPN/favicon.ico' %}">
+
+
+  <link rel="stylesheet" href="{% static 'SuperDuperVPN/bulma.min.css' %}" />
+</head>
+
+<body>
+  
+
+  <!--Navbar-->
+  <nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="{% url 'index' %}">
+        <img src="{% static 'SuperDuperVPN/icon.png' %}" width="28" height="28" />
+      </a>
+
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+
+    <div id="navbarBasicExample" class="navbar-menu">
+      <div class="navbar-start">
+        <a class="navbar-item" onclick="hrefTo(`{% url 'index' %}`)"> Home </a>
+        <a class="navbar-item" onclick="hrefTo(`{% url 'edit_interface' %}`)"> Interface </a>
+        <a class="navbar-item" onclick="hrefTo(`{% url 'peers' %}`)"> Peers </a>
+        <a class="navbar-item" onclick="hrefTo(`{% url 'settings' %}`)"> Settings </a>
       </div>
 
-      <div id="navbarBasicExample" class="navbar-menu">
-        <div class="navbar-start">
-          <a class="navbar-item" onclick="hrefTo(`{% url 'index' %}`)"> Home </a>
-          <a class="navbar-item" onclick="hrefTo(`{% url 'edit_interface' %}`)" > Interface </a>
-          <a class="navbar-item" onclick="hrefTo(`{% url 'peers' %}`)"> Peers </a>
-          <a class="navbar-item" onclick="hrefTo(`{% url 'settings' %}`)" > Settings </a>
-          <a class="navbar-item" onclick="hrefTo(`{% url 'extras' %}`)"> Extras </a>
-        </div>
-
-        <div class="navbar-end">
-          <div class="navbar-item">
-            <div class="buttons">
-              <a class="button is-primary" href="{% url 'logout' %}">
-                <strong>Log out</strong>
-              </a>
-            </div>
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <div class="buttons">
+            <a class="button" href="{% url 'logout' %}">
+              <strong>Log out</strong>
+            </a>
           </div>
         </div>
       </div>
-    </nav>
+    </div>
+  </nav>
 
-    <div class="container">{% block content %} {% endblock %}</div>
-    <!--[if lt IE 7]>
+  <!--End of navbar-->
+
+  <div class="container">{% block content %} {% endblock %}</div>
+  <!--[if lt IE 7]>
       <p class="browsehappy">
         You are using an <strong>outdated</strong> browser. Please
         <a href="#">upgrade your browser</a> to improve your experience.
       </p>
     <![endif]-->
-  </body>
+</body>
+
 </html>
 
 
@@ -73,22 +73,48 @@
 <script>
   var unsaved_work = false
 
-  function hrefTo(href){
-    if (unsaved_work == false){
+  function hrefTo(href) {
+    if (unsaved_work == false) {
       //go
       window.location.href = href;
-    }else{
+    } else {
       //dont go
-      if (confirm("You have unsaved work! Do you really wanna exit?")){
+      if (confirm("You have unsaved work! Do you really wanna exit?")) {
         //go
         set_unsaved_work(false)
         window.location.href = href
-      }else{
+      } else {
         //dont go
       }
     }
   }
-  function set_unsaved_work(value){
+  function set_unsaved_work(value) {
     unsaved_work = value;
   }
+</script>
+
+
+<!--script for bulma menu so it opens on mobile devices-->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+
+// Get all "navbar-burger" elements
+const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+
+// Add a click event on each of them
+$navbarBurgers.forEach( el => {
+  el.addEventListener('click', () => {
+
+    // Get the target from the "data-target" attribute
+    const target = el.dataset.target;
+    const $target = document.getElementById(target);
+
+    // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+    el.classList.toggle('is-active');
+    $target.classList.toggle('is-active');
+
+  });
+});
+
+});
 </script>

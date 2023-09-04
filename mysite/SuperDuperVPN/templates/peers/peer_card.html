@@ -10,6 +10,7 @@
             </div>
         </div>
         <footer class="card-footer">
+            <a href="{% url 'peer_detail' peer.pk %}" class="card-footer-item">View</a>
             <a href="{% url 'edit_peer' peer.pk %}" class="card-footer-item">Edit</a>
             <a  class="card-footer-item" onclick="AreYouSureDeletePeer()">Delete</a>
         </footer>

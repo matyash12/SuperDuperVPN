@@ -1,12 +1,21 @@
 from django import forms
 from django.forms import ModelForm
 from .models import WireGuardInterface, WireGuardPeer, Settings
+from django.core.exceptions import ValidationError
 
 
 class BulmaTextInput(forms.TextInput):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.attrs.update({'class': 'input', 'onchange':'set_unsaved_work(true)'})
+
+
+#the same as BulmaTextInput but with id
+class BulmaTextInputAddPeerName(forms.TextInput):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.attrs.update({'class': 'input', 'onchange':'set_unsaved_work(true)','oninput':'NameChange(); NameChangeNotification()','id':'PeerName'})
+
 
 class BulmaPasswordInput(forms.PasswordInput):
     def __init__(self, *args, **kwargs):
@@ -17,6 +26,12 @@ class BulmaIntegerInput(forms.NumberInput):
    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.attrs.update({'class': 'input'})
+
+#the same as BulmaIntegerInput used for keepalive
+class BulmaIntegerInputKeepAlive(forms.NumberInput):
+   def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.attrs.update({'class': 'input','id':'keepaliveinput'})
 
 
 
@@ -33,20 +48,26 @@ class WireGuardInterfaceForm(ModelForm):
 
 class WireGuardPeerForm(ModelForm):
     Name = forms.CharField(widget=BulmaTextInput,required=True)
-    PublicKey = forms.CharField(widget=BulmaTextInput)
-    AllowedIPs = forms.CharField(widget=BulmaTextInput)
     class Meta:
         model = WireGuardPeer
-        fields = ['Name','PublicKey','AllowedIPs']
+        fields = ['Name']
 
 
-#used in add_peer_name
-class WireguardPeerNameForm(ModelForm):
-    Name = forms.CharField(widget=BulmaTextInput,required=True, label='Name')
-    KeepAlive = forms.IntegerField(widget=BulmaIntegerInput,required=True,label='Keep alive',help_text='0 = means disable')
+#used in add_peer
+class WireguardPeerCreateForm(ModelForm):
+    Name = forms.CharField(widget=BulmaTextInputAddPeerName,required=True, label='Name')
+    KeepAlive = forms.IntegerField(widget=BulmaIntegerInputKeepAlive,required=False,label='Keep alive',initial=0,min_value=0)
+    DNS = forms.CharField(widget=BulmaTextInput,required=True,label='DNS',initial='8.8.8.8')
+    AllowedIPs = forms.CharField(widget=BulmaTextInput,required=True,label='AllowedIPS',initial='0.0.0.0/0, ::/0')
     class Meta:
         model = WireGuardPeer
-        fields = ['Name','KeepAlive']
+        fields = ['Name','KeepAlive','DNS','AllowedIPs']
+    
+    def clean_Name(self):
+        data = self.cleaned_data["Name"]
+        if WireGuardPeer.objects.filter(Name=data).count() > 0:
+            raise ValidationError("This NAME already exist's!")
+        return data
 
 class SettingsForm(ModelForm):
     ServerIpAddress = forms.CharField(widget=BulmaTextInput,required=True,label='IP address or domain of this server')

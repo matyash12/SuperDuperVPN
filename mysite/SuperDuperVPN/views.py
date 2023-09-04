@@ -3,15 +3,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 # Create your views here.
 from django.http import HttpResponse
 from . import Wireguard
-from .forms import (
-    WireGuardInterfaceForm,
-    WireGuardPeerForm,
-    SettingsForm,
-    WireguardPeerNameForm,
-    LoginForm
-)
-from .models import WireGuardInterface, WireGuardPeer, Settings, PeerUsageData
-from .tasks import Wireguard_from_database_to_config_file, Restart_wireguard, Delete_File,CleanGenerated,Load_Host_Wireguard_Logs,Calculate_PeerUsageData
+from .forms import *
+from .models import *
+from .tasks import *
 from django.conf import settings
 import os
 from wsgiref.util import FileWrapper
@@ -142,7 +136,7 @@ def qr_code_viewer(request, name_of_the_file):
     image_path = settings.CLIENT_CONFIG_FILE_FOLDER_QR_CODE + name_of_the_file
     with open(image_path, "rb") as image_file:
         response = HttpResponse(image_file.read(), content_type="image/png")
-        Delete_File.s(image_path).apply_async(countdown=60)
+        #Delete_File.s(image_path).apply_async(countdown=60)
         return response
 
 
@@ -161,7 +155,7 @@ def download_wireguard_client_config(request, name_of_the_file, client_show_name
         response["Content-Disposition"] = (
             "attachment; filename=%s" % client_show_name+".conf"
         )
-        Delete_File.s(filepath).apply_async(countdown=60)
+        #Delete_File.s(filepath).apply_async(countdown=60)
         return response
 
 
@@ -174,114 +168,83 @@ def download_wireguard_client_config(request, name_of_the_file, client_show_name
 # No hard things
 # no setup by user
 @login_required
-def add_peer(request, pk):
-    context = {}
-    data = {}  # all things needed to make config file for client
+def peer_detail(request, pk):
+    
+    
+    peer = WireGuardPeer.objects.get(pk=pk)
+    if peer.Name == '':
+        peer.Name = peer.Name
+    
     # creating keys
     keymanager = Wireguard.KeyManager()
+    
+    
+    
     private_key_bytes = keymanager.generate_private_key_bytes()
     # private key client
-    data["PrivateKey"] = keymanager.decode_to_utf8(private_key_bytes)
-    # public key client
-    data["PublicKey"] = keymanager.decode_to_utf8(
-        keymanager.generate_public_key_bytes(private_key_bytes)
-    )
-    data["PreSharedKey"] = WireGuardInterface.objects.last().PreSharedKey
+    if peer.PrivateKey == '':
+        peer.PrivateKey = keymanager.decode_to_utf8(private_key_bytes)
+        # public key client
+        peer.PublicKey = keymanager.decode_to_utf8(
+            keymanager.generate_public_key_bytes(private_key_bytes)
+        )
+        peer.PreSharedKey = WireGuardInterface.objects.last().PreSharedKey
     # find suitable client ip
-    all_possible_ips = Wireguard.IpManager().GetAllPossibleIPS()
-    for ip in all_possible_ips:
-        # check if in db already in use
-        if len(WireGuardPeer.objects.filter(AllowedIPs=ip + "/32")) == 0:
-            # it's free
-            data["Address"] = ip + "/32"
-            break
+    if peer.Address == '':
+        all_possible_ips = Wireguard.IpManager().GetAllPossibleIPS()
+        for ip in all_possible_ips:
+            # check if in db already in use
+            if len(WireGuardPeer.objects.filter(AllowedIPs=ip + "/32")) == 0:
+                # it's free
+                peer.Address = ip + "/32"
+                break
 
     # creating DNS
-    data["DNS"] = "8.8.8.8"
+    if peer.DNS == '':
+        peer.DNS = "8.8.8.8"
 
-    # connections to these ips will go through this vpn
-    data["AllowedIPs"] = "0.0.0.0/0, ::/0"  # everything
+    if peer.AllowedIPs == '':
+        # connections to these ips will go through this vpn
+        peer.AllowedIPs = "0.0.0.0/0, ::/0"  # everything
 
-    # ip address and port of this server
-    data["Endpoint"] = (
-        Settings.objects.last().ServerIpAddress
-        + ":"
-        + WireGuardInterface.objects.last().ListenPort
-    )
+    if peer.Endpoint == '':
+        # ip address and port of this server
+        peer.Endpoint = (
+            Settings.objects.last().ServerIpAddress
+            + ":"
+            + WireGuardInterface.objects.last().ListenPort
+        )
 
-    # PersistentKeepalive
-    # dont know if this is neccesary? but many people use it
+    if peer.KeepAlive == '':
+        # PersistentKeepalive
+        # dont know if this is neccesary? but many people use it
+        peer.KeepAlive = WireGuardPeer.objects.get(pk=pk).KeepAlive
+
+    if peer.ServerPublickey == '':
+        # Publickey of server needed for Peer to estabilish connection
+        peer.ServerPublickey= WireGuardInterface.objects.last().PublicKey
+
+    config = GenerateConfigFile(peer)
     
-    data["PersistentKeepalive"] = WireGuardPeer.objects.get(pk=pk).KeepAlive
-
-    # Publickey of server needed for Peer to estabilish connection
-    data["ServerPublickey"] = WireGuardInterface.objects.last().PublicKey
-
-    # This what client needs to add to his local wireguard.
-    client_config_wireguard = {
-        "Interface": {
-            "PrivateKey": data["PrivateKey"],
-            "Address": data["Address"],
-            "DNS": data["DNS"],
-        },
-        "Peers": [
-            {
-                "PublicKey": data["ServerPublickey"],
-                "AllowedIPs": data["AllowedIPs"],
-                "Endpoint": data["Endpoint"],
-                "PreSharedKey": data["PreSharedKey"],
-            }
-        ],
-    }
-    if data["PersistentKeepalive"] != 0:
-        client_config_wireguard['Peers'][0]['PersistentKeepalive'] = data["PersistentKeepalive"]
-
-
-    #Name and KeepAlive should already come filled from add_peer_name
-    # add to database this peer(client)
-    peer = WireGuardPeer.objects.get(pk=pk)
-    context["peer_name"] = peer.Name
-    peer.PublicKey = data["PublicKey"]
-    peer.AllowedIPs = data["Address"]
-    peer.Endpoint = ""
+    if (peer.QRCodeName == ''):
+        peer.QRCodeName = CreateQRConfigFile(config)
+    
+    if (peer.ConfigFileName == ''):
+        peer.ConfigFileName = CreateConfigFile(config)
+    
     peer.save()
+    
+    
     # save peer to server wireguard conf file
     Wireguard_from_database_to_config_file.delay()
 
-    # creating config file
-    filename = str(uuid.uuid4()) + ".conf"  # unique filename
-    filepath = settings.CLIENT_CONFIG_FILE_FOLDER + filename
-    Delete_File.s(filepath).apply_async(countdown=300)
-    wireguard_config_file = Wireguard.ConfigFile(filepath)
-    # showing config file to copy paste
-    context["str_config_file"] = wireguard_config_file.create_config_string(
-        client_config_wireguard
-    )
-
-    # creating download file for client
-    wireguard_config_file.set_config(client_config_wireguard)
-    print("Wireguard config file generated:", filepath)
-    context["download_name_config_file"] = filename
-
-    # qr code generation #TODO maybe run this in background..
-    qr = qrcode.QRCode(
-        version=3,  # Specify the version here
-        error_correction=qrcode.constants.ERROR_CORRECT_L,
-        border=0,
-    )
-    qr.add_data(context["str_config_file"])
-    qr.make(fit=True)
-    qr_code = qr.make_image(fill_color="black", back_color="white")
-    filename = str(uuid.uuid4()) + ".png"
-    qr_code_save_path = settings.CLIENT_CONFIG_FILE_FOLDER_QR_CODE + filename
-    qr_code.save(qr_code_save_path)  # saving qr code
-    Delete_File.s(qr_code_save_path).apply_async(countdown=300)
-    context["qr_code_file"] = filename
-
-    #this is what the file will be named when user download
-    context["client_show_name"] = context["peer_name"] + "_wireguard"
-
-    return render(request, "add_peer/add_peer.html", context)
+    return render(request, "add_peer/peer_detail.html", {
+        'peer_name':peer.Name,
+        'str_config_file':config,
+        'qr_code_file':peer.QRCodeName,
+        'download_name_config_file':peer.ConfigFileName,
+        'client_show_name':peer.Name+'_wireguard',
+                                                      })
 
 
 @login_required
@@ -309,19 +272,19 @@ def server_settings(request):
 
 
 @login_required
-def add_peer_name(request):
+def add_peer(request):
     context = {}
     if request.method == "POST":
         if "add" in request.POST["action"]:
-            form = WireguardPeerNameForm(request.POST)
+            form = WireguardPeerCreateForm(request.POST)
             if form.is_valid():
                 obj = form.save()
-                return redirect("add_peer", obj.pk)
+                return redirect("peer_detail", obj.pk)
     else:
-        form = WireguardPeerNameForm()
+        form = WireguardPeerCreateForm()
 
     context["form"] = form
-    return render(request, "add_peer/add_peer_name.html", context)
+    return render(request, "add_peer/add_peer.html", context)
 
 
 def login_page(request):

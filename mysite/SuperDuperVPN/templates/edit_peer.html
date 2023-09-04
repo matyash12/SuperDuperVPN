@@ -1,5 +1,5 @@
 {% extends "base.html" %}
- {% block title %} Edit peer - SuperDuperVPN {% endblock %}
+ {% block title %} Edit peer | SDVPN {% endblock %}
 {% block content %}
 
 <form method="post">
@@ -8,7 +8,7 @@
 
 <section class="section">
   <h1 class="title is-1">Edit {{form.Name.value}}</h1>
-  <h1 class="subtitle">If you've lost your configuration file (QR code), you'll need to create a new peer and then delete the old one (this one) to resolve this issue.</h1>
+  <h1 class="subtitle">Here you can edit your peer. If you want to change more you must create new peer.</h1>
 <!--Buttons-->
 <div class="field is-grouped">
   <!--Save-->
@@ -54,19 +54,6 @@
     <label class="label">{{form.Name.label}}</label>
     <div class="control">{{form.Name}}</div>
   </div>
-
-  <!--PublicKey-->
-  <div class="field">
-    <label class="label">{{form.PublicKey.label}}</label>
-    <div class="control">{{form.PublicKey}}</div>
-  </div>
-
-  <!--AllowedIPs-->
-  <div class="field">
-    <label class="label">{{form.AllowedIPs.label}}</label>
-    <div class="control">{{form.AllowedIPs}}</div>
-  </div>
-
 
 
 </form>

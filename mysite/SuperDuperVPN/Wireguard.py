@@ -18,7 +18,7 @@ import subprocess
 #TODO fix space after each key ending with '='
 #get, set wireguard config-file in dictionary
 class ConfigFile:
-    
+    #TODO rewrite 
     def __init__(self,path_to_config_file:str) -> None:
         self.path = path_to_config_file
 

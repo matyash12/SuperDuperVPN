@@ -1,12 +1,12 @@
 {% extends "base.html" %} 
-{% block title %}  Peers - SuperDuperVPN {% endblock %}
+{% block title %}  Peers | SDVPN {% endblock %}
 {% block content %}
 <section class="section">
   <h1 class="title is-1">Peers</h1>
   <div class="field is-grouped">
     <!--Add peer-->
     <div class="control">
-      <a href="{% url 'add_peer_name' %}"
+      <a href="{% url 'add_peer' %}"
         ><button class="button is-primary">Add peer</button></a
       >
     </div>
