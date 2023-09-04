@@ -1,0 +1,29 @@
+<div class="column is-4">
+    <div class="card">
+        <div class="card-content">
+            <p class="title">{{ peer.Name }}</p>
+            <div class="content">
+                <p><strong>Public Key:</strong> {{ peer.PublicKey|slice:":10" }}</p>
+                <p><strong>Endpoint:</strong> {{ peer.Endpoint }}</p>
+                <p><strong>Received:</strong> {{ peer.Received }}</p>
+                <p><strong>Sent:</strong> {{ peer.Sent }}</p>
+            </div>
+        </div>
+        <footer class="card-footer">
+            <a href="{% url 'edit_peer' peer.pk %}" class="card-footer-item">Edit</a>
+            <a  class="card-footer-item" onclick="AreYouSureDeletePeer()">Delete</a>
+        </footer>
+    </div>
+</div>
+
+<script>
+    function AreYouSureDeletePeer() {
+      if (
+        confirm(
+          "Delete peer {{ peer.Name }}"
+        )
+      ) {
+        window.location.href = "{% url 'delete_peer' peer.pk %}"
+      }
+    }
+  </script>

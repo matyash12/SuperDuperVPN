@@ -1,107 +1,90 @@
-<!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]>      <html class="no-js"> <![endif]-->
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Edit interface</title>
-    <meta name="description" content="" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'SuperDuperVPN/bulma.min.css' %}" />
-  </head>
-  <body>
-    <script>
-      function AreYouSureGenerateKeys() {
-        if (confirm("Do you confirm that you want to generate new encryption keys? Please be aware that this action will require you to recreate configurations for all connected peers.")) {
-          document.getElementById("javascriptcontroled").name = 'action'
-          document.getElementById("javascriptcontroled").value = 'generate'
-          document.getElementById("mainform").submit()
-        }
-      }
-    </script>
-    <div class="columns">
-      <div class="column is-offset-one-quarter is-half">
-        <p class="is-size-1">Edit Interface</p>
+{% extends "base.html" %} 
+{% block title %} Interface - SuperDuperVPN {% endblock %}
 
-        <!--[if lt IE 7]>
-          <p class="browsehappy">
-            You are using an <strong>outdated</strong> browser. Please
-            <a href="#">upgrade your browser</a> to improve your experience.
-          </p>
-        <![endif]-->
+{% block content %}
 
-        <form method="post" id="mainform">
-          {% csrf_token %}
 
-          <!--Address-->
-          <div class="field">
-            <label class="label">{{form.Address.label}}</label>
-            <div class="control">{{form.Address}}</div>
-          </div>
-          <!--ListenPort-->
-          <div class="field">
-            <label class="label">{{form.ListenPort.label}}</label>
-            <div class="control">{{form.ListenPort}}</div>
-          </div>
-          <!--PrivateKey-->
-          <div class="field">
-            <label class="label">{{form.PrivateKey.label}}</label>
-            <div class="control">{{form.PrivateKey}}</div>
-          </div>
-          <!--PublicKey-->
-          <div class="field">
-            <label class="label">{{form.PublicKey.label}}</label>
-            <div class="control">{{form.PublicKey}}</div>
-          </div>
-          <!--PreSharedKey-->
-          <div class="field">
-            <label class="label">{{form.PreSharedKey.label}}</label>
-            <div class="control">{{form.PreSharedKey}}</div>
-          </div>
-
-          <!--Button-->
-          <div class="field is-grouped">
-            <!--Save-->
-            <div class="control">
-              <button
-                type="submit"
-                name="action"
-                value="save"
-                class="button is-primary"
-              >
-                Save Interface
-              </button>
-            </div>
-            <!--Generate keys-->
-            <div class="control">
-              <button
-                type="button"
-                name="action"
-                value="generate"
-                class="button"
-                onclick="AreYouSureGenerateKeys()"
-              >
-                Generate keys
-              </button>
-      
-            </div>
-            <!--Used for AreYouSureGenerateKeys() to communicate with backend-->
-            <input type="hidden" id="javascriptcontroled">
-            <!--Cancel-->
-            <div class="control">
-              <a href="{% url 'index' %}"
-                ><button type="button" class="button is-light">
-                  Cancel
-                </button></a
-              >
-            </div>
-          </div>
-        </form>
+<form method="post" id="mainform">
+  <section class="section">
+    <h1 class="title is-1">Interface</h1>
+    <!--Button-->
+    <div class="field is-grouped">
+      <!--Save-->
+      <div class="control">
+        <button
+          type="submit"
+          name="action"
+          value="save"
+          class="button is-primary"
+        >
+          Save Interface
+        </button>
       </div>
+      <!--Generate keys-->
+      <div class="control">
+        <button
+          type="button"
+          name="action"
+          value="generate"
+          class="button"
+          onclick="AreYouSureGenerateKeys()"
+        >
+          Generate keys
+        </button>
+      </div>
+      <!--Used for AreYouSureGenerateKeys() to communicate with backend-->
+      <input type="hidden" id="javascriptcontroled" />
     </div>
-  </body>
-</html>
+  </section>
+
+  <script>
+    function AreYouSureGenerateKeys() {
+      if (
+        confirm(
+          "Do you confirm that you want to generate new encryption keys? Please be aware that this action will require you to recreate configurations for all connected peers."
+        )
+      ) {
+        document.getElementById("javascriptcontroled").name = "action";
+        document.getElementById("javascriptcontroled").value = "generate";
+        document.getElementById("mainform").submit();
+      }
+    }
+  </script>
+
+  <!--[if lt IE 7]>
+    <p class="browsehappy">
+      You are using an <strong>outdated</strong> browser. Please
+      <a href="#">upgrade your browser</a> to improve your experience.
+    </p>
+  <![endif]-->
+
+  {% csrf_token %}
+
+  <!--Address-->
+  <div class="field">
+    <label class="label">{{form.Address.label}}</label>
+    <div class="control">{{form.Address}}</div>
+  </div>
+  <!--ListenPort-->
+  <div class="field">
+    <label class="label">{{form.ListenPort.label}}</label>
+    <div class="control">{{form.ListenPort}}</div>
+  </div>
+  <!--PrivateKey-->
+  <div class="field">
+    <label class="label">{{form.PrivateKey.label}}</label>
+    <div class="control">{{form.PrivateKey}}</div>
+  </div>
+  <!--PublicKey-->
+  <div class="field">
+    <label class="label">{{form.PublicKey.label}}</label>
+    <div class="control">{{form.PublicKey}}</div>
+  </div>
+  <!--PreSharedKey-->
+  <div class="field">
+    <label class="label">{{form.PreSharedKey.label}}</label>
+    <div class="control">{{form.PreSharedKey}}</div>
+  </div>
+</form>
+
+{% endblock %}

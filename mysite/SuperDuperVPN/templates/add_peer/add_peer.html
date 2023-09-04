@@ -1,53 +1,34 @@
-<!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Copy config</title>
-    <meta name="description" content="" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'SuperDuperVPN/bulma.min.css' %}">
-  </head>
-  <body>
-    <!--[if lt IE 7]>
-      <p class="browsehappy">
-        You are using an <strong>outdated</strong> browser. Please
-        <a href="#">upgrade your browser</a> to improve your experience.
-      </p>
-    <![endif]-->
-    <div class="columns">
-      <div class="column is-offset-one-quarter is-half">
-        <p class="is-size-1">New peer named "{{peer_name}}"</p>
+{% extends "base.html" %} 
 
-        <p class="is-size-2">
-          Click to download:
-          <a
-            href="{% url 'download_wireguard_client_config' download_name_config_file client_show_name %}"
-            >Config file</a
-          >
-        </p>
-        <figure class="image is-square">
-          <img
-            src="{% url 'qr_code_viewer' qr_code_file %}"
-            alt="Private Image"
-          />
-        </figure>
+{% block title %} Add peer - SuperDuperVPN {% endblock %} 
 
-        <pre>{{str_config_file}}</pre>
-
-        <p>You won't be able to view the configuration file afterward, so please ensure you make a copy of it.</p>
-
-        <div class="field is-grouped">
-            <div class="control">
-                <a href="{% url 'peers' %}"><button class="button is-primary" type="button">Done</button></a>
-            </div>
-        </div>
-      </div>
+{% block content %}
+<section class="section">
+  <h1 class="title is-1">New peer named "{{peer_name}}"</h1>
+  <h2 class="subtitle">
+    You won't be able to view the configuration file afterward, so please ensure you make a copy of it.
+  </h2>
+  <div class="field is-grouped">
+    <div class="control">
+      <a href="{% url 'peers' %}"
+        ><button class="button is-primary" type="button">Done</button></a
+      >
     </div>
-  </body>
-</html>
+    <div class="control">
+      <a href="{% url 'download_wireguard_client_config' download_name_config_file client_show_name %}">
+        <button class="button" type="button">Download</button>
+      </a>
+    </div>
+  </div>
+</section>
+
+
+  <figure class="image is-square">
+    <img src="{% url 'qr_code_viewer' qr_code_file %}" alt="Private Image" />
+  </figure>
+
+  <pre>{{str_config_file}}</pre>
+
+
+
+{% endblock %}

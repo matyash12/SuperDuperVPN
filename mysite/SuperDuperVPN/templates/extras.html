@@ -1,62 +1,36 @@
-<!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title></title>
-    <meta name="description" content="" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'SuperDuperVPN/bulma.min.css' %}" />
-  </head>
-  <body>
-    <!--[if lt IE 7]>
-      <p class="browsehappy">
-        You are using an <strong>outdated</strong> browser. Please
-        <a href="#">upgrade your browser</a> to improve your experience.
-      </p>
-    <![endif]-->
-    <div class="columns">
-      <div class="column is-half is-offset-one-quarter">
-        <p class="is-size-1">Extras</p>
+{% extends "base.html" %} 
 
-        <div class="field is-grouped">
-          <!--Home-->
-          <div class="control">
-            <a href="{% url 'index' %}"><button class="button">Home</button></a>
-          </div>
+{% block title %} Extras - SuperDuperVPN {% endblock %}
 
-          <!--Delete generated files-->
-          <div class="control">
-            <a href="{% url 'extras_delete_generated_files' %}"
-              ><button class="button" type="button">
-                Delete all generated files
-              </button></a
-            >
-          </div>
-          
-          <!--Load data from wireguard_log_file-->
-          <div class="control">
-            <a href="{% url 'extras_Load_Host_Wireguard_Logs' %}">
-              <button class="button" type="button">
-                Load host's logs
-              </button>
-            </a>
-          </div>
-          <!--Calculate PeerUsageData-->
-          <div class="control">
-            <a href="{% url 'extras_PeerUsageData' %}">
-              <button class="button" type="button">
-                Calculate Peer-Usage-Data
-              </button>
-            </a>
-          </div>
-        </div>
-      </div>
+{% block content %}
+<section class="section">
+  <h1 class="title is-1">Extras</h1>
+  <div class="field is-grouped">
+
+    <!--Delete generated files-->
+    <div class="control">
+      <a href="{% url 'extras_delete_generated_files' %}"
+        ><button class="button" type="button">
+          Delete all generated files
+        </button></a
+      >
     </div>
-  </body>
-</html>
+  
+    <!--Load data from wireguard_log_file-->
+    <div class="control">
+      <a href="{% url 'extras_Load_Host_Wireguard_Logs' %}">
+        <button class="button" type="button">Load host's logs</button>
+      </a>
+    </div>
+    <!--Calculate PeerUsageData-->
+    <div class="control">
+      <a href="{% url 'extras_PeerUsageData' %}">
+        <button class="button" type="button">Calculate Peer-Usage-Data</button>
+      </a>
+    </div>
+  </div>
+</section>
+
+
+
+{% endblock %}

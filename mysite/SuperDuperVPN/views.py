@@ -126,6 +126,14 @@ def edit_peer(request, peer_id):
     return render(request, "edit_peer.html", {"form": form})
 
 
+@login_required
+def delete_peer(request,peer_id):
+    peer = get_object_or_404(WireGuardPeer, pk=peer_id)
+    peer.delete()
+    Wireguard_from_database_to_config_file.delay()
+    return redirect('peers')
+
+
 # make it safer...
 # so user can only download those he generated
 # TODO user should be able to see only those he generated

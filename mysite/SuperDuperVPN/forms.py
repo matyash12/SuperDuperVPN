@@ -6,7 +6,7 @@ from .models import WireGuardInterface, WireGuardPeer, Settings
 class BulmaTextInput(forms.TextInput):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.attrs.update({'class': 'input'})
+        self.attrs.update({'class': 'input', 'onchange':'set_unsaved_work(true)'})
 
 class BulmaPasswordInput(forms.PasswordInput):
     def __init__(self, *args, **kwargs):

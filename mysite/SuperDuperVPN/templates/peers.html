@@ -1,72 +1,27 @@
-<!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title></title>
-    <meta name="description" content="" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'SuperDuperVPN/bulma.min.css' %}">
-  </head>
-  <body>
-    <!--[if lt IE 7]>
-      <p class="browsehappy">
-        You are using an <strong>outdated</strong> browser. Please
-        <a href="#">upgrade your browser</a> to improve your experience.
-      </p>
-    <![endif]-->
-
-    <div class="columns">
-      <div class="column">
-        <p class="is-size-1">Peers</p>
-        <div class="field is-grouped">
-            <!--Home-->
-            <div class="control">
-                <a href="{% url 'index' %}"><button class="button">Home</button></a>
-            </div>
-
-            <!--Add peer-->
-            <div class="control">
-                <a href="{% url 'add_peer_name' %}"><button class="button">Add peer</button></a>
-            </div>
-        </div>
-
-        <table class="table is-bordered is-striped is-narrow is-hoverable">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Public key</th>
-              <th>Endpoint</th>
-              <th>Received</th>
-              <th>Sent</th>
-              <th>Edit</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for peer in peers %}
-            <tr>
-              <td>{{ peer.Name }}</td>
-              <td>{{ peer.PublicKey }}</td>
-              <td>{{peer.Endpoint}}</td>
-              <td>{{peer.Received}}</td>
-              <td>{{peer.Sent}}</td>
-              <td>
-                <a href="{% url 'edit_peer' peer.pk %}" class="button is-link"
-                  >Edit</a
-                >
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+{% extends "base.html" %} 
+{% block title %}  Peers - SuperDuperVPN {% endblock %}
+{% block content %}
+<section class="section">
+  <h1 class="title is-1">Peers</h1>
+  <div class="field is-grouped">
+    <!--Add peer-->
+    <div class="control">
+      <a href="{% url 'add_peer_name' %}"
+        ><button class="button is-primary">Add peer</button></a
+      >
     </div>
+  </div>
+</section>
 
-    <script src="" async defer></script>
-  </body>
-</html>
+<div class="container">
+  <div class="columns is-multiline">
+
+    {% for peer in peers %}
+     {% include 'peers/peer_card.html' %}
+    {% endfor %}
+      
+  </div>
+</div>
+
+
+{% endblock %}
