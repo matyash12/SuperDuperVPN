@@ -7,7 +7,7 @@ mysite/SuperDuperVPN/templates/generated_qr_codes/
 
 #for test purposes
 test.conf 
-
+.vscode/
 #default suggested .gitignore by Github
 
 # Byte-compiled / optimized / DLL files
