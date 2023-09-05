@@ -93,7 +93,7 @@ def CleanGenerated():
 #args: seconds_in_the_past (how many seconds in the past should it look (on what files))
 @shared_task
 def Load_Host_Wireguard_Logs(seconds_in_the_past=-1):
-    folder_path = '/wireguardconfig/wireguard_logs'
+    folder_path = settings.WIREGUARD_LOGS_PATH
     # Get a list of all files in the folder
     
     if seconds_in_the_past == -1:
@@ -161,10 +161,18 @@ def Calculate_PeerUsageData():
     
     for log in command_logs:
         text = log.text
-        peer_info_matches = re.findall(r'peer: (.*?)\s+endpoint: (.*?)\s+allowed ips: (.*?)\s+latest handshake: (.*?)\s+transfer: (.*?) received, (.*?) sent', text, re.DOTALL)
+        if ('preshared key: (hidden)' in text):
+            #now everthing is with preshared key
+            peer_info_matches = re.findall(r'peer: (.*?)\s+preshared key: (.*?)\s+endpoint: (.*?)\s+allowed ips: (.*?)\s+latest handshake: (.*?)\s+transfer: (.*?) received, (.*?) sent', text, re.DOTALL)
+        else: 
+            #old version
+            peer_info_matches = re.findall(r'peer: (.*?)\s+endpoint: (.*?)\s+allowed ips: (.*?)\s+latest handshake: (.*?)\s+transfer: (.*?) received, (.*?) sent', text, re.DOTALL)
         for match in peer_info_matches:
-            public_key, endpoint, allowed_ips, latest_handshake, received, sent = match
-
+            try:
+                public_key, endpoint, allowed_ips, latest_handshake, received, sent = match
+            except Exception as e:
+                public_key, preshared_key, endpoint, allowed_ips, latest_handshake, received, sent = match
+            
             instance = PeerUsageData()
             instance.epoch_time = log.epoch_time #epoch time of the measuarement
             instance.peer_public_key = public_key or -1
@@ -176,8 +184,14 @@ def Calculate_PeerUsageData():
                     instance.Latest_Handshake = 0
                 else:
                     numbers = re.findall(r'\d+', latest_handshake)
-                    combined_number = int("".join(numbers))
-                    instance.Latest_Handshake = combined_number 
+                    if len(numbers) == 0:
+                        instance.Latest_Handshake = 0
+                    elif len(numbers) == 1:
+                        instance.Latest_Handshake = int(numbers[0])
+                    elif len(numbers) == 2:
+                        instance.Latest_Handshake = int(numbers[0]) * 60 + int(numbers[1])
+                    else:
+                        instance.Latest_Handshake = -1
             except Exception as e:
                 instance.Latest_Handshake = -1
 
