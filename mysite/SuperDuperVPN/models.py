@@ -32,7 +32,7 @@ class WireGuardPeer(models.Model):
     DNS = models.CharField(max_length=200)
     AllowedIPs = models.CharField(max_length=200)
     Endpoint = models.CharField(max_length=200)
-    KeepAlive = models.IntegerField(default=25) #PersistentKeepalive
+    KeepAlive = models.IntegerField(default=0) #PersistentKeepalive
     PreSharedKey = models.CharField(max_length=200)
 
     #name of the file 1fcd2012-7714-40a2-a2e5-be6b780155a6.png
