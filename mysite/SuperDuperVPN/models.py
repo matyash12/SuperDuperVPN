@@ -28,7 +28,7 @@ class WireGuardPeer(models.Model):
     Name = models.CharField(max_length=200, default='NoName')
     PublicKey = models.CharField(max_length=200)
     PrivateKey = models.CharField(max_length=200)
-    Address = models.CharField(max_length=200) #address of the server
+    Address = models.CharField(max_length=200)
     DNS = models.CharField(max_length=200)
     AllowedIPs = models.CharField(max_length=200)
     Endpoint = models.CharField(max_length=200)

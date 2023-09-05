@@ -194,7 +194,7 @@ def peer_detail(request, pk):
         all_possible_ips = Wireguard.IpManager().GetAllPossibleIPS()
         for ip in all_possible_ips:
             # check if in db already in use
-            if len(WireGuardPeer.objects.filter(AllowedIPs=ip + "/32")) == 0:
+            if len(WireGuardPeer.objects.filter(Address=ip + "/32")) == 0:
                 # it's free
                 peer.Address = ip + "/32"
                 break
