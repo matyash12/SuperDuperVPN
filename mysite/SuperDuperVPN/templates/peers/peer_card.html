@@ -12,19 +12,17 @@
         <footer class="card-footer">
             <a href="{% url 'peer_detail' peer.pk %}" class="card-footer-item">View</a>
             <a href="{% url 'edit_peer' peer.pk %}" class="card-footer-item">Edit</a>
-            <a  class="card-footer-item" onclick="AreYouSureDeletePeer()">Delete</a>
+            <a class="card-footer-item" onclick="AreYouSureDeletePeer('{{peer.Name}}', `{% url 'delete_peer' peer.pk %}`)">Delete</a>
         </footer>
     </div>
 </div>
 
 <script>
-    function AreYouSureDeletePeer() {
-      if (
-        confirm(
-          "Delete peer {{ peer.Name }}"
-        )
-      ) {
-        window.location.href = "{% url 'delete_peer' peer.pk %}"
-      }
+  function AreYouSureDeletePeer(peer_name, delete_href) {
+    if (
+      confirm("Delete peer " + peer_name)
+    ) {
+      window.location.href = delete_href
     }
-  </script>
+  }
+</script>
