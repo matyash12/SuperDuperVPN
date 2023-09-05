@@ -14,7 +14,7 @@ class WireGuardConfigFile(models.Model):
     Endpoint = models.CharField(max_length=200)
 
 class WireGuardInterface(models.Model):
-    Address = models.CharField(max_length=200,default='10.0.0.1/24')
+    Address = models.CharField(max_length=200,default='10.0.0.1/32')
     SaveConfig = models.CharField(max_length=200, default='True')
     ListenPort = models.CharField(max_length=200,default='51820')
     PrivateKey = models.CharField(max_length=200)
