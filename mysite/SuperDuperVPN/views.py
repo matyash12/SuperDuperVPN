@@ -16,11 +16,48 @@ from django.core.paginator import Paginator
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
+import socket
 
 
 @login_required
 def index(request):
-    return render(request, "index.html")
+    context = {}
+    
+    context['client_api'] = get_client_ip(request)
+    
+    peer = WireGuardPeer.objects.filter(Address=get_client_ip(request)+'/32')
+    if len(peer) == 0:
+        #unsecured connection
+        context['connection_is_secured'] = False
+    else:
+        #secured connection
+        context['connection_is_secured'] = True
+    
+    context['number_of_peers'] = len(WireGuardPeer.objects.all())
+    
+    max_epoch_time = PeerUsageData.objects.aggregate(Max('epoch_time'))['epoch_time__max']
+    
+    context['last_wireguard_wg'] = datetime.fromtimestamp(max_epoch_time).strftime('%c')
+    
+    Transfer_Received_MiB = 0
+    Transfer_Sent_MiB = 0
+    for peer in PeerUsageData.objects.filter(epoch_time=max_epoch_time):
+        Transfer_Received_MiB += peer.Transfer_Received_MiB
+        Transfer_Sent_MiB += peer.Transfer_Sent_MiB
+        
+        
+    context['Transfer_Received_MiB'] = Transfer_Received_MiB
+    context['Transfer_Sent_MiB'] = Transfer_Sent_MiB
+    
+    context['server_domain'] = Settings.objects.last().ServerIpAddress
+    context['server_ip'] = socket.gethostbyname(Settings.objects.last().ServerIpAddress)
+    
+    context['git_describe_version'] = get_git_describe()
+    context['git_branch_name'] = get_git_branch_name()
+    
+    context['server_time_and_date'] = datetime.fromtimestamp(time.time()).strftime('%c')
+    
+    return render(request, "index.html",context)
 
 
 # i have no idea what this is? wtf
