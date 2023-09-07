@@ -13,7 +13,7 @@ import qrcode
 import qrcode.image.svg
 import uuid
 import subprocess
-
+import requests
 @shared_task
 def HelloWorld():
     print('HELLO WORLD!')
@@ -306,3 +306,12 @@ def get_git_describe() ->str:
 def get_git_branch_name()->str:
     branch_name = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"]).strip().decode()
     return branch_name
+
+#dont know if this a good idea
+def get_public_ip():
+    try:
+        response = requests.get("https://httpbin.org/ip")
+        data = response.json()
+        return data["origin"]
+    except Exception as e:
+        return str(e)
