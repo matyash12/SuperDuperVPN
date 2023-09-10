@@ -1,5 +1,5 @@
 # Wireguard GUI
-A GUI to manage your WireGuard setup.
+A GUI to manage your Wireguard setup.
 
 ## Features
 * Add, Edit, Delete peers (clients)
