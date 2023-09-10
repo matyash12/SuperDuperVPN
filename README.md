@@ -6,6 +6,8 @@ A GUI to manage your Wireguard setup.
 * Create, Edit wg0.conf
 * See each peer usage (like command "wg")
 * User managment using Django
+* Usage of extra PreSharedKey
+* Automatic generating of config file for Wireguard
 
 # Install guide
 
