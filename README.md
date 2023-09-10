@@ -29,6 +29,7 @@ A GUI to manage your Wireguard setup.
 * Celery
 * Bulma
 * Mysql
+* Nginx
 * Python
 
 
