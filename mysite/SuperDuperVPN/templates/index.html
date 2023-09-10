@@ -5,7 +5,78 @@
 
 {% block content %}
 <section class="section">
-  <p class="title is-1">WireGuard managment portal</p>
+  <h1 class="title is-1">WireGuard managment portal</h1>
+  <h2 class="subtitle">Full GUI dashboard for managing Wireguard VPN</h2>
+
+
+  <!--Box if you are connected through this wireguard or not-->
+  {% if connection_is_secured %}
+  <div class="notification is-success">
+    <p class="is-size-3">Your ip is: <strong>{{client_api}}</strong> your connection is <strong>SAFE</strong></p>
+  </div>
+  {% else %}
+  <div class="notification is-danger">
+    <p class="is-size-3">Your ip is: <strong>{{client_api}}</strong> your connection is <strong>UNSAFE</strong></p>
+  </div>
+  {% endif %}
+    
   
+  <div class="columns">
+    <!--some interesting and basic info about system-->
+    <div class="column">
+      <h3 class="title is-3 has-text-centered">Basic Info</h3>
+      <div class="content">
+        <ul>
+          <li><strong>Server time:</strong> {{server_time_and_date}}</li>
+          <li><strong>Number of peers:</strong> {{number_of_peers}}</li>
+          <li><strong>Total data received:</strong> {{Transfer_Received_MiB}} MB</li>
+          <li><strong>Total data sent:</strong> {{Transfer_Sent_MiB}} MB</li>
+          <li><strong>Server domain:</strong> {{server_domain}}</li>
+          <li><strong>Server IP:</strong> {{server_ip}}</li>
+          <li><strong>Version:</strong> {{git_describe_version}}</li>
+          <li><strong>Branch name:</strong> {{git_branch_name}}</li>
+        </ul>
+      </div>
+    </div>
+
+    <!--clients to download-->
+    <div class="column">
+      <h3 class="has-text-centered title is-size-3">Clients</h3>
+      <h4 class="title is-size-4">Desktop</h4>
+      <div class="field is-grouped">
+        <p class="control">
+          <a target="_blank" href="https://apps.apple.com/cz/app/wireguard/id1451685025?mt=12" class="button is-link">Mac OS</a>
+        </p>
+        <p class="control">
+          <a target="_blank" href="https://download.wireguard.com/windows-client/wireguard-installer.exe" class="button is-link">Windows</a>
+        </p>
+      </div>
+  
+      <h4 class="title is-size-4">Mobile</h4>
+      <div class="field is-grouped">
+        <p class="control">
+          <a target="_blank" href="https://apps.apple.com/us/app/wireguard/id1441195209?ls=1" class="button is-link">iOS</a>
+        </p>
+        <p class="control">
+          <a target="_blank" href="https://play.google.com/store/apps/details?id=com.wireguard.android&pli=1" class="button is-link">Android</a>
+        </p>
+      </div>
+  
+      <h4 class="title is-size-4">Linux</h4>
+      <div class="content">
+        <ul>
+          <li>Ubuntu: <code>sudo apt install wireguard</code></li>
+          <li>Debian: <code>apt install wireguard</code></li>
+          <li>Fedora: <code>sudo dnf install wireguard-tools</code></li>
+        </ul>
+      </div>
+  
+      <a href="https://www.wireguard.com/install/" target="_blank" class="button is-link">Other Installs</a>
+    </div>
+    
+  </div>
+  <div class="content has-text-centered">
+    <p class="is-size-3">Last reading Wireguard data: <strong>{{ last_wireguard_wg }}</strong></p>
+  </div>
 </section>
 {% endblock %}

@@ -46,7 +46,6 @@ class WireGuardPeer(models.Model):
 class Settings(models.Model):
     ServerIpAddress = models.CharField(max_length=200)
 
-
 class WireguardCommandLogs(models.Model):
     epoch_time = models.IntegerField() #time seconds from 1970
     text = models.TextField() #log stored 

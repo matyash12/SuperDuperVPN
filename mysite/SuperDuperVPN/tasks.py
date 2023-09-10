@@ -12,7 +12,8 @@ import time
 import qrcode
 import qrcode.image.svg
 import uuid
-
+import subprocess
+import requests
 @shared_task
 def HelloWorld():
     print('HELLO WORLD!')
@@ -284,3 +285,33 @@ def CreateConfigFile(config) -> str:
     #Delete_File.s(filepath).apply_async(countdown=300)
     Wireguard.ConfigFile('').save_file(filepath,config)
     return filename
+
+
+#used for getting client api
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+
+#get version of the app
+def get_git_describe() ->str:
+    version = subprocess.check_output(["git", "describe", "--always"]).strip().decode()
+    return version
+
+#get branch name
+def get_git_branch_name()->str:
+    branch_name = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"]).strip().decode()
+    return branch_name
+
+#dont know if this a good idea
+def get_public_ip():
+    try:
+        response = requests.get("https://httpbin.org/ip")
+        data = response.json()
+        return data["origin"]
+    except Exception as e:
+        return str(e)

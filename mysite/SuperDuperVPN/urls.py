@@ -28,4 +28,8 @@ urlpatterns = [
     path('extras_delete_generated_files',views.extras_delete_generated_files,name='extras_delete_generated_files'),
     path('extras_Load_Host_Wireguard_Logs',views.extras_Load_Host_Wireguard_Logs,name='extras_Load_Host_Wireguard_Logs'),
     path('extras_PeerUsageData',views.extras_PeerUsageData,name='extras_PeerUsageData'),
+    
+    
+    #entry
+    path('entry',views.entry,name="entry")
 ]

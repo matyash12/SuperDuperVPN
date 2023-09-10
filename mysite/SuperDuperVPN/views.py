@@ -16,16 +16,53 @@ from django.core.paginator import Paginator
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
+import socket
 
 
 @login_required
 def index(request):
-    return render(request, "index.html")
-
-
-# i have no idea what this is? wtf
-# def view(request):
-#    return render(request, "view.html")
+    context = {}
+    
+    context['client_api'] = get_client_ip(request)
+    
+    peer = WireGuardPeer.objects.filter(Address=get_client_ip(request)+'/32')
+    if len(peer) == 0:
+        #unsecured connection
+        context['connection_is_secured'] = False
+    else:
+        #secured connection
+        context['connection_is_secured'] = True
+    
+    context['number_of_peers'] = len(WireGuardPeer.objects.all())
+    
+    context['Transfer_Received_MiB'] = '0'
+    context['Transfer_Sent_MiB'] = '0'
+    context['last_wireguard_wg'] = 'Never'
+    
+    if PeerUsageData.objects.all().count() != 0:
+        max_epoch_time = PeerUsageData.objects.aggregate(Max('epoch_time'))['epoch_time__max']
+        
+        context['last_wireguard_wg'] = datetime.fromtimestamp(max_epoch_time).strftime('%c')
+        
+        Transfer_Received_MiB = 0
+        Transfer_Sent_MiB = 0
+        for peer in PeerUsageData.objects.filter(epoch_time=max_epoch_time):
+            Transfer_Received_MiB += peer.Transfer_Received_MiB
+            Transfer_Sent_MiB += peer.Transfer_Sent_MiB
+            
+            
+        context['Transfer_Received_MiB'] = Transfer_Received_MiB
+        context['Transfer_Sent_MiB'] = Transfer_Sent_MiB
+    
+    context['server_domain'] = Settings.objects.last().ServerIpAddress
+    context['server_ip'] = socket.gethostbyname(Settings.objects.last().ServerIpAddress)
+    
+    context['git_describe_version'] = get_git_describe()
+    context['git_branch_name'] = get_git_branch_name()
+    
+    context['server_time_and_date'] = datetime.fromtimestamp(time.time()).strftime('%c')
+    
+    return render(request, "index.html",context)
 
 
 @login_required
@@ -46,7 +83,6 @@ def edit_interface(request):
                 return redirect(index)
         elif "generate" in request.POST["action"]:
             # generate keys
-            #TODO secure it so it wont be accidentaly clicked on
             keymanager = Wireguard.KeyManager()
             private_key_bytes = keymanager.generate_private_key_bytes()
             form = WireGuardInterfaceForm(
@@ -88,9 +124,12 @@ def peers(request):
         usage_data = PeerUsageData.objects.filter(peer_public_key=obj.PublicKey.replace("\n", "")).order_by('-epoch_time').first()
         if usage_data is not None:
             peer['Endpoint'] = usage_data.Endpoint
-            peer['Received'] = str(usage_data.Transfer_Received_MiB) + ' MiB' 
-            peer['Sent'] = str(usage_data.Transfer_Sent_MiB) + ' MiB'
-    
+            peer['Received'] = str(usage_data.Transfer_Received_MiB) + ' MB' 
+            peer['Sent'] = str(usage_data.Transfer_Sent_MiB) + ' MB'
+        else:
+            peer['Endpoint'] = 'Not found'
+            peer['Received'] = '0 MB'
+            peer['Sent'] = '0 MB'
 
 
         objs.append(peer)
@@ -109,7 +148,7 @@ def edit_peer(request, peer_id):
                 form.save()
                 Wireguard_from_database_to_config_file.delay()
                 # Do something with the data, e.g., save to a model or send an email
-                return redirect(index)
+                return redirect(peers)
         elif "delete" == request.POST["action"]:
             peer.delete()
             Wireguard_from_database_to_config_file.delay()
@@ -117,7 +156,7 @@ def edit_peer(request, peer_id):
     else:
         form = WireGuardPeerForm(instance=peer)
 
-    return render(request, "edit_peer.html", {"form": form})
+    return render(request, "edit_peer.html", {"form": form,'peer':peer})
 
 
 @login_required
@@ -163,10 +202,7 @@ def download_wireguard_client_config(request, name_of_the_file, client_show_name
 # wireguard = Wireguard.ConfigFile(wireguard_conf_file_path)
 
 
-# Simple it should be
-# You open this page and it should automaticly save it to database
-# No hard things
-# no setup by user
+#place where user can scane the QR code copy, download or copy paste the config file
 @login_required
 def peer_detail(request, pk):
     
@@ -289,7 +325,7 @@ def add_peer(request):
 
 def login_page(request):
     if request.user.is_authenticated:
-        return redirect("index")
+        return redirect("entry")
     context = {}
     context["form"] = LoginForm()
     context["invalid"] = False
@@ -303,7 +339,7 @@ def login_page(request):
             )
             if user is not None:
                 login(request, user)
-                return redirect("index")
+                return redirect("entry")
         context["invalid"] = True
         context["form"] = form
     return render(request, "accounts/login.html", context)
@@ -340,3 +376,42 @@ def extras_PeerUsageData(request):
     context = {}
     Calculate_PeerUsageData.delay()
     return redirect('extras')
+
+
+@login_required
+def entry(request):
+    
+    if request.method == 'POST':
+        # save the interface settings
+        form_interface = WireGuardInterfaceForm(request.POST, instance=WireGuardInterface())
+        form_settings = SettingsForm(request.POST,instance=Settings())
+        if form_interface.is_valid() and form_settings.is_valid():
+            # Process the form data
+            form_interface.save()
+            form_settings.save()
+            Wireguard_from_database_to_config_file.delay()
+            # Do something with the data, e.g., save to a model or send an email
+            return redirect('index')
+        else:
+            return redirect('entry')
+    else:
+        skip_entry = True
+        
+        if Settings.objects.last()  == None:
+            settings = SettingsForm()
+            skip_entry = False
+        else:
+            settings = SettingsForm(instance=Settings.objects.last())
+            
+            
+        if WireGuardInterface.objects.last() == None:
+            interface = WireGuardInterfaceForm()
+            skip_entry = False
+        else:
+            interface = WireGuardInterfaceForm(instance=WireGuardInterface.objects.last())
+                
+                
+        if skip_entry == False:
+            return render(request,'entry.html',{'settings':SettingsForm(),'interface':WireGuardInterfaceForm()})
+        else:
+            return redirect('index')

@@ -25,14 +25,16 @@
 
   <!--Delete-->
   <div class="control">
-    <button
-      type="submit"
-      name="action"
+    <a onclick="AreYouSureDeletePeer('{{peer.Name}}', `{% url 'delete_peer' peer.pk %}`)">
+      <button
+      type="button"
       value="delete"
       class="button is-danger"
     >
       Delete
     </button>
+    </a>
+   
   </div>
 
   <!--Cancel-->
@@ -58,4 +60,18 @@
 
 </form>
 
+<script>
+  function AreYouSureDeletePeer(peer_name, delete_href) {
+    console.log(peer_name)
+    if (
+      confirm("Delete peer " + peer_name)
+    ) {
+      window.location.href = delete_href
+    }
+  }
+</script>
+
 {% endblock %}
+
+
+

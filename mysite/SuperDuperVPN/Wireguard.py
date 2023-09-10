@@ -97,7 +97,7 @@ class KeyManager:
     
     def generate_private_key_bytes(self):
         # Run the 'wg genkey' command and capture its output
-        genkey_process = subprocess.Popen(['wg', 'genkey'], stdout=subprocess.PIPE)
+        genkey_process = subprocess.Popen(['wg', 'genkey'], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         genkey_output = genkey_process.communicate()[0]
         #removing last character because it is '\n'.
         genkey_output = genkey_output[:-1] 

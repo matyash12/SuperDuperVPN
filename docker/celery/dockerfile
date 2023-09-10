@@ -4,7 +4,7 @@ FROM python:3.11.4-bookworm
 WORKDIR /app
 COPY docker/celery/requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
-
 # Run the Celery worker when the container starts
-
+RUN apt update
+RUN apt install -y wireguard
 CMD (cd mysite;celery -A mysite worker --loglevel=info)
