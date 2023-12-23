@@ -50,8 +50,8 @@ services:
       context: .
       dockerfile: docker/nginx/dockerfile
     ports:
-      - "80:80"
-      - "443:443"
+      - "${NGINX_HTTP_PORT}:80"
+      - "${NGINX_HTTPS_PORT}:443"
     depends_on:
       - django
     volumes:
