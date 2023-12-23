@@ -45,10 +45,10 @@ pipeline {
         }
         
 
-        stage('Run "docker compose --build -d"') {
+        stage('Run "docker compose up --build -d"') {
             steps {
                 script {
-                    sh 'docker compose --build -d'
+                    sh 'docker compose up --build -d'
                 }
             }
         }
