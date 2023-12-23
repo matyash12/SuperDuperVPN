@@ -1,0 +1,75 @@
+version: '3'
+
+services:
+  # MySQL database service
+  db:
+    image: mysql:8.1.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    healthcheck:
+      test: mysqladmin ping --silent
+  # Django app service
+  django:
+    build:
+      context: .
+      dockerfile: docker/django/dockerfile
+    volumes:
+      - /Users/matyas/Documents/GitHub/super-duper-vpn:/app
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - DJANGO_SETTINGS_MODULE=mysite.settings
+    healthcheck:
+      test: curl 127.0.0.1:8000
+
+  #redis
+  redis:
+    image: redis:7.2.0-bookworm
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+  
+  celery:
+    build:
+      context: .
+      dockerfile: docker/celery/dockerfile
+    volumes:
+      - /Users/matyas/Documents/GitHub/super-duper-vpn:/app
+      - ${WIREGUARD_CONFIG_FOLDER}:/wireguardconfig #where config for wireguard is on host machine
+    depends_on:
+      - redis
+      - django
+  
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/nginx/dockerfile
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - django
+    volumes:
+      - ${NGINX_FULLCHAIN_LOCATION}:/etc/nginx/ssl/fullchain.pem
+      - ${NGINX_PRIVKEY_LOCATION}:/etc/nginx/ssl/privkey.pem
+  
+  celery-beat:
+    build:
+      context: .
+      dockerfile: docker/celery_beat/dockerfile
+    volumes:
+      - /Users/matyas/Documents/GitHub/super-duper-vpn:/app
+    depends_on:
+      - redis
+      - django
+      - celery
+
+
+
+volumes:
+  my_shared_volume:

@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import logging
+from celery.schedules import crontab
+from datetime import datetime
 
 from pathlib import Path
 LOGGING = {
