@@ -43,11 +43,13 @@ pipeline {
                 }
             }
         }
+
         
 
         stage('Run "docker compose up --build -d"') {
             steps {
                 script {
+                    sh 'docker-compose down --volumes'
                     sh 'docker compose up --build -d'
                 }
             }
